@@ -1,7 +1,7 @@
 # Set system name
-set(CMAKE_SYSTEM_NAME Sphinx-VxWorks6)
-set(CMAKE_SYSTEM_VERSION 6.7)
-set(CMAKE_SYSTEM_PROCESSOR gr712)
+set(CMAKE_SYSTEM_NAME VxWorks7)
+set(CMAKE_SYSTEM_VERSION 7.0)
+set(CMAKE_SYSTEM_PROCESSOR gr740)
 
 set(WINDRIVER_COMPILER_ROOT "/opt/tools/sabertooth/Windriver-7-SR0620/compilers/gaisler-gnu-7.2.0.1/x86_64-linux2")
 # Check toolchain directory exists
