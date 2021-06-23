@@ -34,7 +34,7 @@ set(COMPILER_COMMON_FLAGS
     -D__VXWORKS__ \
     -D__ELF__  \
     -D_HAVE_TOOL_XTORS \
-    -D_VSB_CONFIG_FILE=\"$(WIND_VSB_PATH)/h/config/vsbConfig.h\" \
+    -D_VSB_CONFIG_FILE=\\\"/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/h/config/vsbConfig.h\\\" \
     -D_WRS_KERNEL \
     -DTOOL_FAMILY=gnu -DTOOL=gnu \
     -Wall -Wextra \

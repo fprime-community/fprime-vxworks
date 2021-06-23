@@ -8,7 +8,11 @@
 # Set VxWorks target
 add_definitions(-DTGT_OS_TYPE_VXWORKS)
 add_definitions(-D_WRS_KERNEL)
-add_definitions(-D__INCvsbConfig_h)
+
+set(CMAKE_SYSTEM_NAME VxWorks7)
 
 # Add VxWorks specific headers into the system
 include_directories(SYSTEM "${FPRIME_FRAMEWORK_PATH}/Fw/Types/VxWorks")
+include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/public")
+include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/system")
+include_directories("/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/share/h")
