@@ -2,6 +2,7 @@
 
 #include <vxWorks.h>
 #include <logLib.h>
+#include <string.h>
 
 namespace Os {
     Log::Log() {
@@ -10,6 +11,10 @@ namespace Os {
         // automatically create this as a default logger.
         this->registerLogger(this);
     }
+
+
+    static char logBuffers[FW_LOG_TEXT_BUFFER_DEPTH][FW_LOG_TEXT_BUFFER_SIZE];
+    static NATIVE_INT_TYPE logEntry = 0;
 
     // Instance implementation
     void Log::log(
@@ -25,6 +30,15 @@ namespace Os {
         POINTER_CAST a8,
         POINTER_CAST a9
     ) {
-        ::logMsg(const_cast<char*>(fmt), a1, a2, a3, a4, a5, a6);
+
+        // copy the possibly transient string to a circular buffer
+        // this relies on the VxWorks log task to keep up with
+        // the circular buffer
+
+        strncpy(logBuffers[logEntry],fmt,FW_LOG_TEXT_BUFFER_SIZE);
+        // null terminate
+        logBuffers[logEntry][FW_LOG_TEXT_BUFFER_SIZE - 1] = 0;
+        ::logMsg(logBuffers[logEntry], a1, a2, a3, a4, a5, a6);
+        logEntry = (logEntry + 1)%FW_LOG_TEXT_BUFFER_DEPTH;
     }
 }
