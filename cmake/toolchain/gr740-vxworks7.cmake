@@ -1,7 +1,13 @@
 # Set system name
-set(CMAKE_SYSTEM_NAME VxWorks7)
+set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR gr740)
+
+include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/public")
+include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/system")
+include_directories("/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/share/h")
+
+add_definitions(-DBUILD_SABERTOOTH)
 
 set(WINDRIVER_COMPILER_ROOT "/opt/tools/sabertooth/Windriver-7-SR0620/compilers/gaisler-gnu-7.2.0.1/x86_64-linux2")
 # Check toolchain directory exists
