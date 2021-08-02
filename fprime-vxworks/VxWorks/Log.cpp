@@ -35,7 +35,7 @@ namespace Os {
         // this relies on the VxWorks log task to keep up with
         // the circular buffer
 
-        strncpy(logBuffers[logEntry],fmt,FW_LOG_TEXT_BUFFER_SIZE);
+        (void) strncpy(logBuffers[logEntry],fmt,FW_LOG_TEXT_BUFFER_SIZE);
         // null terminate
         logBuffers[logEntry][FW_LOG_TEXT_BUFFER_SIZE - 1] = 0;
         ::logMsg(logBuffers[logEntry], a1, a2, a3, a4, a5, a6);
