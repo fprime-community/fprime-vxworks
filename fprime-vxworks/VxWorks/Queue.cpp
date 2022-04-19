@@ -56,7 +56,7 @@ namespace Os {
                 case S_msgQLib_NON_ZERO_TIMEOUT_AT_INT_LEVEL:
                     return QUEUE_FULL;
                 default:
-                    logMsg("Queue send error %s! %d\n",(int)strerror(errno),(int)this->m_handle,0,0,0,0);
+                    logMsg((char*)"Queue send error %s! %d\n",(int)strerror(errno),(int)this->m_handle,0,0,0,0);
                     return QUEUE_UNKNOWN_ERROR;
             }
         } else {
@@ -80,7 +80,7 @@ namespace Os {
                 case S_objLib_OBJ_UNAVAILABLE:
                     return QUEUE_NO_MORE_MSGS;
                 default:
-                    logMsg("Queue receive error %s! %d %d\n",(int)strerror(errno),(int)this->m_handle,(int)block,0,0,0);
+                    logMsg((char*)"Queue receive error %s! %d %d\n",(int)strerror(errno),(int)this->m_handle,(int)block,0,0,0);
                     return QUEUE_UNKNOWN_ERROR;
             }
         } else {

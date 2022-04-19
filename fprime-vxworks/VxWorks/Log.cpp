@@ -4,6 +4,8 @@
 #include <logLib.h>
 #include <string.h>
 
+#define FW_LOG_TEXT_BUFFER_DEPTH 100
+
 namespace Os {
     Log::Log() {
 

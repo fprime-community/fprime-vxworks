@@ -50,8 +50,8 @@ register_fprime_module()
 
 if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
     add_dependencies(Os fprime-vxworks_VxWorks)
-    target_link_libraries(Os fprime-vxworks_VxWorks)
-    target_link_libraries(fprime-vxworks_VxWorks Os) #Power overwhelming
+    target_link_libraries(Os PUBLIC fprime-vxworks_VxWorks)
+    target_link_libraries(fprime-vxworks_VxWorks PUBLIC Os) #Power overwhelming
 endif()
 
 
