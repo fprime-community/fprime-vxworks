@@ -3,7 +3,7 @@ set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 6.9)
 set(CMAKE_SYSTEM_PROCESSOR PPC)
 
-set(WINDRIVER_COMPILER_ROOT "/home/tcanham/WindRiver/gnu/4.3.3-vxworks-6.9/x86-linux2")
+set(WINDRIVER_COMPILER_ROOT "$ENV{WIND_HOME}/gnu/4.3.3-vxworks-6.9/x86-linux2")
 # Check toolchain directory exists
 IF(NOT EXISTS "${WINDRIVER_COMPILER_ROOT}")
     message(FATAL_ERROR " Windriver compilers not found at ${WINDRIVER_COMPILER_ROOT}.")
