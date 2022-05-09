@@ -31,6 +31,7 @@ if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
         "RTSleep.c"
         "TaskId.cpp"
         "Event.cpp"
+        "FileSystem.cpp"
         # Non-VxWorks basic support
         "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
         "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
