@@ -47,12 +47,3 @@ if (BAREMETAL_SCHEDULER)
     list(FILTER SOURCE_FILES EXCLUDE REGEX "Task\.cpp")
 endif ()
 register_fprime_module()
-
-if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
-    add_dependencies(Os fprime-vxworks_VxWorks)
-    target_link_libraries(Os fprime-vxworks_VxWorks)
-    target_link_libraries(fprime-vxworks_VxWorks Os) #Power overwhelming
-endif()
-
-
-
