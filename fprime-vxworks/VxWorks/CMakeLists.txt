@@ -35,15 +35,6 @@ if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
         "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
         "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
       )
-else()
-  set(SOURCE_FILES
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
-     )
 endif()
 
-# If baremetal scheduler is set, remove the previous task files and add in the Baremetal variant
-if (BAREMETAL_SCHEDULER)
-    add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Baremetal/TaskRunner/")
-    list(FILTER SOURCE_FILES EXCLUDE REGEX "Task\.cpp")
-endif ()
 register_fprime_module()
