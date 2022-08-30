@@ -18,22 +18,28 @@ set(MOD_DEPS
         Utils/Hash
         )
 
-if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
-  set(SOURCE_FILES
-        "Queue.cpp"
+set(SOURCE_FILES
+      "Queue.cpp"
+      "Log.cpp"
+      "InterruptLock.cpp"
+      "TaskLock.cpp"
+      "${FPRIME_FRAMEWORK_PATH}/Os/Posix/IntervalTimer.cpp"
+      "Mutex.cpp"
+      "TaskId.cpp"
+      "Event.cpp"
+    )
+
+if(CMAKE_SYSTEM_VERSION MATCHES 6.[789])
+  list(APPEND SOURCE_FILES
         "Task.cpp"
-        "Log.cpp"
         "WatchdogTimer.cpp"
-        "InterruptLock.cpp"
-        "TaskLock.cpp"
-        "${FPRIME_FRAMEWORK_PATH}/Os/Posix/IntervalTimer.cpp"
-        "Mutex.cpp"
         "RTSleep.c"
-        "TaskId.cpp"
-        "Event.cpp"
-        # Non-VxWorks basic support
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
+      )
+elseif(CMAKE_SYSTEM_VERSION MATCHES 7.[0-9])
+  list(APPEND SOURCE_FILES
+        #"Task.cpp"
+        #"WatchdogTimer.cpp"
+        #"RTSleep.c"
       )
 endif()
 
