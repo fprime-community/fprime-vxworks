@@ -39,7 +39,7 @@ if(CMAKE_SYSTEM_VERSION MATCHES 6.[789])
 elseif(CMAKE_SYSTEM_VERSION MATCHES 7.[0-9])
   list(APPEND SOURCE_FILES
         "VxWorks7/Task.cpp"
-        #"WatchdogTimer.cpp"
+        "WatchdogTimer.cpp"
         #"RTSleep.c"
       )
 endif()
