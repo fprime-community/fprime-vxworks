@@ -19,25 +19,26 @@ set(MOD_DEPS
         )
 
 set(SOURCE_FILES
-      "Queue.cpp"
-      "Log.cpp"
+      "Event.cpp"
       "InterruptLock.cpp"
+      "Log.cpp"
+      "Mutex.cpp"
+      "Queue.cpp"
+      "TaskCommon.cpp"
+      "TaskId.cpp"
       "TaskLock.cpp"
       "${FPRIME_FRAMEWORK_PATH}/Os/Posix/IntervalTimer.cpp"
-      "Mutex.cpp"
-      "TaskId.cpp"
-      "Event.cpp"
     )
 
 if(CMAKE_SYSTEM_VERSION MATCHES 6.[789])
   list(APPEND SOURCE_FILES
-        "Task.cpp"
+        "VxWorks6/Task.cpp"
         "WatchdogTimer.cpp"
         "RTSleep.c"
       )
 elseif(CMAKE_SYSTEM_VERSION MATCHES 7.[0-9])
   list(APPEND SOURCE_FILES
-        #"Task.cpp"
+        "VxWorks7/Task.cpp"
         #"WatchdogTimer.cpp"
         #"RTSleep.c"
       )
