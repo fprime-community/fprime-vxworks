@@ -27,19 +27,20 @@ set(SOURCE_FILES
       "TaskCommon.cpp"
       "TaskId.cpp"
       "TaskLock.cpp"
+      "WatchdogTimerCommon.cpp"
       "${FPRIME_FRAMEWORK_PATH}/Os/Posix/IntervalTimer.cpp"
     )
 
 if(CMAKE_SYSTEM_VERSION MATCHES 6.[789])
   list(APPEND SOURCE_FILES
         "VxWorks6/Task.cpp"
-        "WatchdogTimer.cpp"
+        "VxWorks6/WatchdogTimer.cpp"
         "RTSleep.c"
       )
 elseif(CMAKE_SYSTEM_VERSION MATCHES 7.[0-9])
   list(APPEND SOURCE_FILES
         "VxWorks7/Task.cpp"
-        "WatchdogTimer.cpp"
+        "VxWorks7/WatchdogTimer.cpp"
         #"RTSleep.c"
       )
 endif()
