@@ -53,6 +53,16 @@ namespace Os {
         }
 
     }
+
+    void* WatchdogTimer::getParameter()
+    {
+        return m_parameter;
+    }
+
+    WatchdogTimer::WatchdogCb WatchdogTimer::getCallback()
+    {
+        return m_cb;
+    }
     
 }
 
