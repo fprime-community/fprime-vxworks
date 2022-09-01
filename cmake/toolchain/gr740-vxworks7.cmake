@@ -3,18 +3,28 @@ set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR gr740)
 
-include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/public")
-include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/system")
-include_directories("/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/share/h")
-
-add_definitions(-DBUILD_SABERTOOTH)
-
+# Set environment variables
+set(BSP_ROOT "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB")
 set(WINDRIVER_COMPILER_ROOT "/opt/tools/sabertooth/Windriver-7-SR0620/compilers/gaisler-gnu-7.2.0.1/x86_64-linux2")
+
+# Check if BSP directory exists
+IF(NOT EXISTS "${BSP_ROOT}")
+    message(FATAL_ERROR " BSP not found at ${BSP_ROOT}.")
+endif()
+message(STATUS "Using BSP at: ${BSP_ROOT}")
+
 # Check toolchain directory exists
 IF(NOT EXISTS "${WINDRIVER_COMPILER_ROOT}")
     message(FATAL_ERROR " Windriver compilers not found at ${WINDRIVER_COMPILER_ROOT}.")
 endif()
 message(STATUS "Using VxWorks compilers at: ${WINDRIVER_COMPILER_ROOT}")
+
+include_directories(SYSTEM "${BSP_ROOT}/krnl/h/public")
+include_directories(SYSTEM "${BSP_ROOT}/krnl/h/system")
+include_directories("${BSP_ROOT}/share/h")
+
+add_definitions(-DBUILD_SABERTOOTH)
+
 # specify the cross compiler
 set(CMAKE_C_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/ccsparc")
 set(CMAKE_ASM_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/ccsparc")
@@ -45,7 +55,7 @@ set(COMPILER_COMMON_FLAGS
     -D__VXWORKS__ \
     -D__ELF__  \
     -D_HAVE_TOOL_XTORS \
-    -D_VSB_CONFIG_FILE=\\\"/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/h/config/vsbConfig.h\\\" \
+    -D_VSB_CONFIG_FILE=\\\"${BSP_ROOT}/h/config/vsbConfig.h\\\" \
     -D_WRS_KERNEL \
     -DTOOL_FAMILY=gnu -DTOOL=gnu \
     -Wall -Wextra \
