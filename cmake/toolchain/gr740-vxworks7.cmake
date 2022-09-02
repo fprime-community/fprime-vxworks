@@ -3,24 +3,22 @@ set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR gr740)
 
-include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/public")
-include_directories(SYSTEM "/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/krnl/h/system")
-include_directories("/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/share/h")
+set(WIND_TOOLS_HOME "$ENV{WIND_TOOLS_HOME}")
+set(VSB_HOME "$ENV{VSB_HOME}")
+set(WIND_HOME "$ENV{WIND_HOME}")
+set(WIND_BASE "$ENV{WIND_BASE}")
+set(WIND_COMP "$ENV{WIND_COMP}")
 
-add_definitions(-DBUILD_SABERTOOTH)
+include_directories(SYSTEM "${VSB_HOME}/krnl/h/public")
+include_directories(SYSTEM "${VSB_HOME}/krnl/h/system")
+include_directories("${VSB_HOME}/share/h")
 
-set(WINDRIVER_COMPILER_ROOT "/opt/tools/sabertooth/Windriver-7-SR0620/compilers/gaisler-gnu-7.2.0.1/x86_64-linux2")
-# Check toolchain directory exists
-IF(NOT EXISTS "${WINDRIVER_COMPILER_ROOT}")
-    message(FATAL_ERROR " Windriver compilers not found at ${WINDRIVER_COMPILER_ROOT}.")
-endif()
-message(STATUS "Using VxWorks compilers at: ${WINDRIVER_COMPILER_ROOT}")
 # specify the cross compiler
-set(CMAKE_C_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/ccsparc")
-set(CMAKE_ASM_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/ccsparc")
-set(CMAKE_CXX_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/c++sparc")
-set(CMAKE_AR "${WINDRIVER_COMPILER_ROOT}/bin/arsparc")
-set(CMAKE_RANLIB "${WINDRIVER_COMPILER_ROOT}/bin/ranlibsparc")
+set(CMAKE_C_COMPILER "${WIND_COMP}/ccsparc")
+set(CMAKE_ASM_COMPILER "${WIND_COMP}/ccsparc")
+set(CMAKE_CXX_COMPILER "${WIND_COMP}/c++sparc")
+set(CMAKE_AR "${WIND_COMP}/arsparc")
+set(CMAKE_RANLIB "${WIND_COMP}/ranlibsparc")
 set(CMAKE_C_ARCHIVE_CREATE "${CMAKE_AR} cr <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_C_ARCHIVE_APPEND "${CMAKE_AR} r  <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_C_ARCHIVE_FINISH "${CMAKE_RANLIB} <TARGET>")
@@ -45,7 +43,7 @@ set(COMPILER_COMMON_FLAGS
     -D__VXWORKS__ \
     -D__ELF__  \
     -D_HAVE_TOOL_XTORS \
-    -D_VSB_CONFIG_FILE=\\\"/opt/tools/sabertooth/sabertooth-bsp/LeonVSB/h/config/vsbConfig.h\\\" \
+    -D_VSB_CONFIG_FILE=\\\"${VSB_HOME}/h/config/vsbConfig.h\\\" \
     -D_WRS_KERNEL \
     -DTOOL_FAMILY=gnu -DTOOL=gnu \
     -Wall -Wextra \
