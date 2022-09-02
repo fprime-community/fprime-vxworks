@@ -1,5 +1,5 @@
 # Set system name
-set(CMAKE_SYSTEM_NAME Coyote-VxWorks7)
+set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR gr712)
 
