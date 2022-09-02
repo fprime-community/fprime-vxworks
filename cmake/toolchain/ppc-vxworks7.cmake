@@ -12,6 +12,13 @@ set(WIND_COMP "$ENV{WIND_COMP}")
 include_directories(SYSTEM "${VSB_HOME}/krnl/h/public")
 include_directories(SYSTEM "${VSB_HOME}/krnl/h/system")
 include_directories("${VSB_HOME}/share/h")
+include_directories("${WIND_BASE}/pkgs_v2/os/arch/ppc-2.0.4.0/kernel/base/h")
+include_directories("${WIND_BASE}/pkgs_v2/os/arch/ppc-2.0.4.0/kernel/60x/h")
+include_directories("${WIND_BASE}/pkgs_v2/os/lang_lib/tool/intrinsics_gnu-1.0.2.2/h")
+
+# This compiler flag is needed otherwise we get a mismatch between
+# class std::initializer_list and what is defined in #include <initializer_list>
+add_definitions(-D__INCvsbConfig_h)
 
 # specify the cross compiler
 set(CMAKE_C_COMPILER "${WIND_COMP}/ccppc")
