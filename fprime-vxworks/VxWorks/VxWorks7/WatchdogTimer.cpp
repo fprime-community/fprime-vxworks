@@ -18,8 +18,7 @@ namespace Os {
     {
         WatchdogTimer *comp = reinterpret_cast<WatchdogTimer*>(arg);
         FW_ASSERT(comp != nullptr);
-        WatchdogTimer::WatchdogCb cb = comp->getCallback();
-        cb(comp->getParameter());
+        comp->expire();
         return OK;
     }
     

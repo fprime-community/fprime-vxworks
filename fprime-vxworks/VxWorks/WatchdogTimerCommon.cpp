@@ -1,4 +1,5 @@
 #include <Os/WatchdogTimer.hpp>
+#include <Fw/Types/Assert.hpp>
 
 #include <vxWorks.h>
 #include <wdLib.h>
@@ -54,16 +55,10 @@ namespace Os {
 
     }
 
-    void* WatchdogTimer::getParameter()
+    void WatchdogTimer::expire()
     {
-        return m_parameter;
+        FW_ASSERT(m_cb != nullptr);
+        m_cb(m_parameter);
     }
 
-    WatchdogTimer::WatchdogCb WatchdogTimer::getCallback()
-    {
-        return m_cb;
-    }
-    
 }
-
-
