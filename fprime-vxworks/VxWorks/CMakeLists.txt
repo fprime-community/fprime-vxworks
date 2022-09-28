@@ -31,14 +31,23 @@ if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
         "RTSleep.c"
         "TaskId.cpp"
         "Event.cpp"
-        # Non-VxWorks basic support
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
       )
 else()
   set(SOURCE_FILES
         "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
      )
+endif()
+if (VXWORKS_POSIX_FILES)
+  list(APPEND SOURCE_FILES
+    "${FPRIME_FRAMEWORK_PATH}/Os/Linux/File.cpp"
+    "${FPRIME_FRAMEWORK_PATH}/Os/Linux/FileSystem.cpp"
+    "${FPRIME_FRAMEWORK_PATH}/Os/Linux/Directory.cpp"
+  )
+else()
+  list(APPEND SOURCE_FILES
+    "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
+    "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
+  )
 endif()
 
 # If baremetal scheduler is set, remove the previous task files and add in the Baremetal variant
