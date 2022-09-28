@@ -31,6 +31,7 @@ if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
         "RTSleep.c"
         "TaskId.cpp"
         "Event.cpp"
+        "FileSystem.cpp"
       )
 else()
   set(SOURCE_FILES
@@ -40,7 +41,8 @@ endif()
 if (VXWORKS_POSIX_FILES)
   list(APPEND SOURCE_FILES
     "${FPRIME_FRAMEWORK_PATH}/Os/Linux/File.cpp"
-    "${FPRIME_FRAMEWORK_PATH}/Os/Linux/FileSystem.cpp"
+#    "${FPRIME_FRAMEWORK_PATH}/Os/Linux/FileSystem.cpp"
+     "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
     "${FPRIME_FRAMEWORK_PATH}/Os/Linux/Directory.cpp"
   )
 else()
@@ -59,8 +61,8 @@ register_fprime_module()
 
 if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
     add_dependencies(Os fprime-vxworks_VxWorks)
-    target_link_libraries(Os fprime-vxworks_VxWorks)
-    target_link_libraries(fprime-vxworks_VxWorks Os) #Power overwhelming
+    target_link_libraries(Os PUBLIC fprime-vxworks_VxWorks)
+    target_link_libraries(fprime-vxworks_VxWorks PUBLIC Os) #Power overwhelming
 endif()
 
 

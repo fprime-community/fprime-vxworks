@@ -3,6 +3,11 @@
 #include <vxWorks.h>
 #include <logLib.h>
 #include <string.h>
+#include <stdio.h>
+
+#include <Fw/Types/StringUtils.hpp>
+
+#define FW_LOG_TEXT_BUFFER_DEPTH 100
 
 namespace Os {
     Log::Log() {
@@ -35,10 +40,10 @@ namespace Os {
         // this relies on the VxWorks log task to keep up with
         // the circular buffer
 
-        (void) strncpy(logBuffers[logEntry],fmt,FW_LOG_TEXT_BUFFER_SIZE);
+        (void) snprintf(logBuffers[logEntry],FW_LOG_TEXT_BUFFER_SIZE,fmt, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9);
         // null terminate
-        logBuffers[logEntry][FW_LOG_TEXT_BUFFER_SIZE - 1] = 0;
-        ::logMsg(logBuffers[logEntry], a1, a2, a3, a4, a5, a6);
+        logBuffers[logEntry][FW_LOG_TEXT_BUFFER_SIZE-1] = 0;
+        ::logMsg(logBuffers[logEntry], 0,0,0,0,0,0);
         logEntry = (logEntry + 1)%FW_LOG_TEXT_BUFFER_DEPTH;
     }
 }
