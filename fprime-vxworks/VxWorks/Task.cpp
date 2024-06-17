@@ -1,14 +1,113 @@
-#include <Os/Task.hpp>
-#include <Fw/Types/Assert.hpp>
-
 #include <vxWorks.h>
 #include <taskLib.h> // need it for VX_FP_TASK
 #include <sysLib.h>
 #include <tickLib.h>
 
-#include <errno.h>
-#include <string.h>
+#include <cstring>
+#include <unistd.h>
+#include <climits>
+#include <cerrno>
+#include <pthread.h>
 
+#include "Fw/Logger/Logger.hpp"
+#include "Fw/Types/Assert.hpp"
+#include "Os/Task.hpp"
+
+#include "Task.hpp"
+
+namespace Os {
+namespace VxWorks {
+namespace Task {
+
+    void PosixTask::onStart() {}
+
+    Os::Task::Status PosixTask::start(const Arguments& arguments) {
+        FW_ASSERT(arguments.m_routine != nullptr);
+
+     
+
+        this->m_name = "TV_";
+        this->m_name += name;
+        this->m_identifier = identifier;
+        this->m_started = false;
+        this->m_affinity = cpuAffinity;
+        
+        // convert priority from Posix range to VxWorks range
+        NATIVE_INT_TYPE vxPriority = 255 - priority;
+        
+        // If a registry has been registered, register task
+        if (Task::s_taskRegistry) {
+            Task::s_taskRegistry->addTask(this);
+        }
+        
+        NATIVE_INT_TYPE stat = taskCreate((char*)this->m_name.toChar(),vxPriority,VX_FP_TASK,stackSize,(FUNCPTR)routine,(int)arg,0,0,0,0,0,0,0,0,0);
+        
+        if (ERROR == stat) {
+            return TASK_UNKNOWN_ERROR; 
+        }
+        
+        this->m_handle = (NATIVE_INT_TYPE)stat;
+        
+#ifdef _WRS_CONFIG_SMP
+        if (cpuAffinity != -1) {
+            cpuset_t aff;
+
+            CPUSET_ZERO (aff);
+            CPUSET_SET (aff, cpuAffinity);
+
+	    if (taskCpuAffinitySet (this->m_handle, aff) == ERROR) {
+               /* Either CPUs are not enabled or we are in UP mode */
+               taskDelete (this->m_handle);
+               return TASK_INVALID_AFFINITY;
+	    }
+
+        }
+#endif
+
+        stat = taskActivate(stat); // activate task
+        if (ERROR == stat) {
+            return TASK_UNKNOWN_ERROR;
+        }
+
+
+        Task::s_numTasks++;
+        
+        return TASK_OK;
+    }
+
+    Os::Task::Status PosixTask::join() {
+        Os::Task::Status status = Os::Task::Status::JOIN_ERROR;
+        if (not this->m_handle.m_is_valid) {
+            status = Os::Task::Status::INVALID_HANDLE;
+        } else {
+            PlatformIntType stat = ::pthread_join(this->m_handle.m_task_descriptor, nullptr);
+            status = (stat == PosixTaskHandle::SUCCESS) ? Os::Task::Status::OP_OK : Os::Task::Status::JOIN_ERROR;
+        }
+        return status;
+    }
+
+    TaskHandle* PosixTask::getHandle() {
+        return &this->m_handle;
+    }
+
+    // Note: not implemented for Posix threads. Must be manually done using a mutex or other blocking construct as there
+    // is no top-level pthreads support for suspend and resume.
+    void PosixTask::suspend(Os::Task::SuspensionType suspensionType) {
+        FW_ASSERT(0);
+    }
+
+    void PosixTask::resume() {
+        FW_ASSERT(0);
+    }
+} // end namespace Task
+} // end namespace Posix
+} // end namespace Os
+
+
+
+
+
+// old!!!!
 namespace Os {
     Task::Task() : m_handle(0), m_identifier(0), m_affinity(-1), m_started(false), m_suspendedOnPurpose(false) {
     }
