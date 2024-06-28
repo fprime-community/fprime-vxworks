@@ -17,16 +17,9 @@ set(HEADER_FILES
 register_fprime_module(Os_VxWorks_Shared)
 
 #### VxWorks/Os/Task Section ####
-if(CMAKE_SYSTEM_VERSION MATCHES 6.[789])
-  list(APPEND SOURCE_FILES
-        "VxWorks6/Task.cpp"
-      )
-elseif(CMAKE_SYSTEM_VERSION MATCHES 7.[0-9])
-  list(APPEND SOURCE_FILES
-        "VxWorks7/Task.cpp"
-      )
-endif()
-
+list(APPEND SOURCE_FILES
+    "Task.cpp"
+)
 
 set(MOD_DEPS Os_VxWorks_Shared Fw/Time Os)
 register_fprime_module(Os_Task_VxWorks)
