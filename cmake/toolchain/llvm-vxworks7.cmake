@@ -6,6 +6,24 @@ set(VSB_HOME "$ENV{VSB_HOME}")
 set(WIND_BASE "$ENV{WIND_BASE}")
 set(WIND_COMP "$ENV{WIND_COMP}")
 
+include_directories(SYSTEM "/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/krnl/h/public")
+include_directories(SYSTEM "/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/krnl/h/system")
+
+ include_directories(
+"/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/krnl/configlette"
+"/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/h/config/vsbConfig.h"
+"/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/share/h"
+"/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/krnl/h/public"
+"/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/krnl/3pp/develop/usr/include"
+
+#"/opt/toolchains/vxworks7.0/compilers/llvm-16.0.0.1/LINUX64/lib/clang/16/include"
+#"/opt/toolchains/vxworks7.0/vxworks/23.09/source/os/lang_lib/libcplus/libcplus_std/h"
+#"/opt/toolchains/vxworks7.0/vxworks/23.09/source/os/lang_lib/libc/libc_std/h"
+#"/opt/toolchains/vxworks7.0/vxworks/23.09/source/os/core/user/h"
+#"/opt/toolchains/vxworks7.0/vxworks/23.09/source/os/core/kernel/h"
+#"/opt/toolchains/vxworks7.0/vxworks/23.09/samples/prebuilt_projects/vsb_vxsim_linux/share/h/public/"
+)
+
 
 ## specify the cross compiler
 set(CMAKE_C_COMPILER "${WIND_COMP}/ccllvm")

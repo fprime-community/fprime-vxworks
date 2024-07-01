@@ -1,5 +1,5 @@
 # Set system name
-set(CMAKE_SYSTEM_NAME VxWorks)
+set(CMAKE_SYSTEM_NAME VxWorks-commonn)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR PPC)
 
