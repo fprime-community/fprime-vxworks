@@ -1,10 +1,13 @@
-#include <Os/Task.hpp>
-#include <Fw/Types/Assert.hpp>
-
 #include <vxWorks.h>
 #include <taskLib.h> // need it for VX_FP_TASK
 #include <sysLib.h>
 #include <tickLib.h>
+
+
+#define VX_OK 0
+
+#include <Os/Task.hpp>
+#include <Fw/Types/Assert.hpp>
 
 #include <errno.h>
 #include <string.h>
@@ -22,7 +25,7 @@ namespace Os {
     )
     {
         routine(arg);
-        return OK;
+        return VX_OK;
     }
     
     Task::TaskStatus Task::start(const Fw::StringBase &name, NATIVE_INT_TYPE identifier, NATIVE_INT_TYPE priority, NATIVE_INT_TYPE stackSize, taskRoutine routine, void* arg, NATIVE_INT_TYPE cpuAffinity) {
