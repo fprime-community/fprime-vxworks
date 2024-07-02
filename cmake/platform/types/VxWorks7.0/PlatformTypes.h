@@ -26,11 +26,15 @@
 
 #include <vxWorks.h>
 
+// Work around for annoying VxWorks OK and NO_WAIT macros that collide with F Prime.
+
 #ifdef OK
+  typedef enum VX_OK_ALIAS { VX_OK = OK };
   #undef OK
 #endif
 
 #ifdef NO_WAIT
+  typedef enum VX_NOWAIT_ALIAS { VX_NO_WAIT = NO_WAIT };
   #undef NO_WAIT
 #endif
 

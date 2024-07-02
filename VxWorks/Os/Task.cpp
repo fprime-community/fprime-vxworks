@@ -4,8 +4,6 @@
 #include <tickLib.h>
 
 
-#define VX_OK 0
-
 #include <Os/Task.hpp>
 #include <Fw/Types/Assert.hpp>
 
