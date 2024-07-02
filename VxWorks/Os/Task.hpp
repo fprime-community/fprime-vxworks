@@ -1,9 +1,9 @@
 // ======================================================================
-// \title Os/Posix/Task.hpp
-// \brief definitions of Posix implementation of Os::Task
+// \title VxWorks/Os/Task.hpp
+// \brief definitions of VxWorks implementation of Os::Task
 // ======================================================================
-#ifndef Os_Posix_Task_hpp_
-#define Os_Posix_Task_hpp_
+#ifndef Os_VxWorks_Task_hpp_
+#define Os_VxWorks_Task_hpp_
 
 #include <atomic>
 #include <pthread.h>
@@ -25,16 +25,16 @@ namespace Os {
 namespace VxWorks {
 namespace Task {
 
-    //! TaskHandle class definition for posix implementations.
+    //! TaskHandle class definition for VxWorks implementations.
     //!
     struct VxWorksTaskHandle : public TaskHandle {
         static constexpr PlatformIntType SUCCESS = 0;
 
-        //! Posix task descriptor
+        //! VxWorks task descriptor
         FwNativeIntType m_task_descriptor;
     };
 
-    //! Posix task implementation as driven by pthreads implementation
+    //! VxWorks task implementation as driven by pthreads implementation
     class VxWorksTask : public TaskInterface {
       public:
 

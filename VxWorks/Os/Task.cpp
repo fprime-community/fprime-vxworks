@@ -87,7 +87,7 @@ namespace Task {
         FW_ASSERT(0);
     }
 } // end namespace Task
-} // end namespace Posix
+} // end namespace VxWorks
 } // end namespace Os
 
 
