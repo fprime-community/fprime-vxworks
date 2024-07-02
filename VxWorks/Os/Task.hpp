@@ -5,8 +5,17 @@
 #ifndef Os_VxWorks_Task_hpp_
 #define Os_VxWorks_Task_hpp_
 
+
+// VxWorks headers
+#define OK VX_OK
+#include <vxWorks.h>
+#include <taskLib.h> // need it for VX_FP_TASK
+#include <sysLib.h>
+#include <tickLib.h>
+#undef OK
+
 #include <atomic>
-#include <pthread.h>
+
 #include <Os/Task.hpp>
 
 #include <FpConfig.hpp>
@@ -15,11 +24,6 @@
 #include <Os/Mutex.hpp>
 #include <Fw/Deprecate.hpp>
 
-// VxWorks headers
-#include <vxWorks.h>
-#include <taskLib.h> // need it for VX_FP_TASK
-#include <sysLib.h>
-#include <tickLib.h>
 
 namespace Os {
 namespace VxWorks {
