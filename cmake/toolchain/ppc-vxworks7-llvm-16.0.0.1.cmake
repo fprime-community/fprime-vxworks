@@ -3,13 +3,16 @@ set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR rad750)
 
-include_directories(SYSTEM "/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/krnl/h/public")
-include_directories(SYSTEM "/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/krnl/h/system")
-include_directories("/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/share/h")
+set(WIND_BASE $ENV{WIND_BASE})
+set(VSB_HOME $ENV{VSB_HOME})
+
+include_directories(SYSTEM "${VSB_HOME}/krnl/h/public")
+include_directories(SYSTEM "${VSB_HOME}/krnl/h/system")
+include_directories("${VSB_HOME}/share/h")
 
 add_definitions(-DBUILD_RAD750)
 
-set(WINDRIVER_COMPILER_ROOT "/opt/tools/VISAR/Windriver-7-23.09/compilers/llvm-16.0.0.1/LINUX64")
+set(WINDRIVER_COMPILER_ROOT "${WIND_BASE}/../../compilers/llvm-16.0.0.1/LINUX64")
 # Check toolchain directory exists
 IF(NOT EXISTS "${WINDRIVER_COMPILER_ROOT}")
     message(FATAL_ERROR " Windriver compilers not found at ${WINDRIVER_COMPILER_ROOT}.")
