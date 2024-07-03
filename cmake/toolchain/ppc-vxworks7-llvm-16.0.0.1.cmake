@@ -1,21 +1,26 @@
 # Set system name
 set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
-set(CMAKE_SYSTEM_PROCESSOR gr740)
+set(CMAKE_SYSTEM_PROCESSOR rad750)
 
-set(VSB_HOME "$ENV{VSB_HOME}")
-set(WIND_COMP "$ENV{WIND_COMP}")
+include_directories(SYSTEM "/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/krnl/h/public")
+include_directories(SYSTEM "/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/krnl/h/system")
+include_directories("/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/share/h")
 
-include_directories(SYSTEM "${VSB_HOME}/krnl/h/public")
-include_directories(SYSTEM "${VSB_HOME}/krnl/h/system")
-include_directories("${VSB_HOME}/share/h")
+add_definitions(-DBUILD_RAD750)
 
+set(WINDRIVER_COMPILER_ROOT "/opt/tools/VISAR/Windriver-7-23.09/compilers/llvm-16.0.0.1/LINUX64")
+# Check toolchain directory exists
+IF(NOT EXISTS "${WINDRIVER_COMPILER_ROOT}")
+    message(FATAL_ERROR " Windriver compilers not found at ${WINDRIVER_COMPILER_ROOT}.")
+endif()
+message(STATUS "Using VxWorks compilers at: ${WINDRIVER_COMPILER_ROOT}")
 # specify the cross compiler
-set(CMAKE_C_COMPILER "${WIND_COMP}/ccsparc")
-set(CMAKE_ASM_COMPILER "${WIND_COMP}/ccsparc")
-set(CMAKE_CXX_COMPILER "${WIND_COMP}/c++sparc")
-set(CMAKE_AR "${WIND_COMP}/arsparc")
-set(CMAKE_RANLIB "${WIND_COMP}/ranlibsparc")
+set(CMAKE_C_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/clang")
+set(CMAKE_ASM_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/clang")
+set(CMAKE_CXX_COMPILER "${WINDRIVER_COMPILER_ROOT}/bin/clang")
+set(CMAKE_AR "${WINDRIVER_COMPILER_ROOT}/bin/arppc")
+set(CMAKE_RANLIB "${WINDRIVER_COMPILER_ROOT}/bin/ranlibppc")
 set(CMAKE_C_ARCHIVE_CREATE "${CMAKE_AR} cr <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_C_ARCHIVE_APPEND "${CMAKE_AR} r  <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_C_ARCHIVE_FINISH "${CMAKE_RANLIB} <TARGET>")
@@ -36,31 +41,44 @@ set(CMAKE_ASM_COMPILER_WORKS 1)
 set(COMPILER_COMMON_FLAGS
     "-DTGT_OS_TYPE_VXWORKS \
     -DTGT_OS_TYPE_VXWORKS7 \
+    -D_VSB_CONFIG_FILE=\\\"/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/h/config/vsbConfig.h\\\" \
+    -mcpu=604 \
+    -DCPU=_VX_PPC604 \
+    -DTOOL_FAMILY=llvm \
+    -DTOOL=llvm \
+    -D_WRS_KERNEL \
+    -mno-spe \
+    -D_WRS_HARDWARE_FP \
+    -mlong-double-64 \
+    -msoft-float \
+    -D__ppc \
+    -D__ppc__ \
+    -D_PPC_NOSDA_NOTOC \
+    -D_WRS_PPC_NO_MCRXR \
+    --target=ppc32  \
     -D__vxworks \
     -D__VXWORKS__ \
-    -D__ELF__  \
+    -D__ELF__ \
     -D_HAVE_TOOL_XTORS \
-    -D_VSB_CONFIG_FILE=\\\"${VSB_HOME}/h/config/vsbConfig.h\\\" \
-    -D_WRS_KERNEL \
-    -DTOOL_FAMILY=gnu -DTOOL=gnu \
-    -Wall -Wextra \
-    -fno-builtin  \
-    -Wno-unused-parameter \
-    -Wno-long-long \
-    -Wconversion \
-    -Wno-sign-conversion \
-    -ansi \
-    -ftls-model=local-exec  \
-    -mcpu=leon3 \
-    -DCPU=_VX_SPARC \
-    -DCPU_VARIANT=_sparcleon \
-    -fno-zero-initialized-in-bss \
-    -D_WRS_VX_SMP \
-    -D_WRS_CONFIG_SMP \
+    -nostdlibinc \
+    -ftls-model=local-exec \
     -fno-builtin \
     -fno-strict-aliasing \
-    -D_USE_INIT_ARRAY -Wall"
-    )
+    -D_USE_INIT_ARRAY \
+    -fwrapv \
+    -mllvm \
+    -two-entry-phi-node-folding-threshold=2 \
+    -fno-unwind-tables \
+    -fno-asynchronous-unwind-tables \
+    -Wall -Wconversion -Wno-sign-conversion \
+    -Wno-unused-but-set-variable \
+    -Wno-deprecated-non-prototype  \
+    -Wno-missing-braces \
+    -MD \
+    -MP \
+    -mlongcall   
+    "
+)
     
 set(CMAKE_C_FLAGS
     "${COMPILER_COMMON_FLAGS} \

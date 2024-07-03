@@ -1,33 +1,36 @@
 # Set system name
-set(CMAKE_SYSTEM_NAME VxWorks)
+set(CMAKE_SYSTEM_NAME VxWorks-commonn)
 set(CMAKE_SYSTEM_VERSION 7.0)
-set(CMAKE_SYSTEM_PROCESSOR gr740)
+set(CMAKE_SYSTEM_PROCESSOR PPC)
 
 set(VSB_HOME "$ENV{VSB_HOME}")
+set(WIND_BASE "$ENV{WIND_BASE}")
 set(WIND_COMP "$ENV{WIND_COMP}")
 
 include_directories(SYSTEM "${VSB_HOME}/krnl/h/public")
 include_directories(SYSTEM "${VSB_HOME}/krnl/h/system")
 include_directories("${VSB_HOME}/share/h")
+include_directories("${WIND_BASE}/pkgs_v2/os/arch/ppc-2.0.4.0/kernel/base/h")
+include_directories("${WIND_BASE}/pkgs_v2/os/arch/ppc-2.0.4.0/kernel/60x/h")
+include_directories("${WIND_BASE}/pkgs_v2/os/lang_lib/tool/intrinsics_gnu-1.0.2.2/h")
+
+# This compiler flag is needed otherwise we get a mismatch between
+# class std::initializer_list and what is defined in #include <initializer_list>
+add_definitions(-D__INCvsbConfig_h)
 
 # specify the cross compiler
-set(CMAKE_C_COMPILER "${WIND_COMP}/ccsparc")
-set(CMAKE_ASM_COMPILER "${WIND_COMP}/ccsparc")
-set(CMAKE_CXX_COMPILER "${WIND_COMP}/c++sparc")
-set(CMAKE_AR "${WIND_COMP}/arsparc")
-set(CMAKE_RANLIB "${WIND_COMP}/ranlibsparc")
+set(CMAKE_C_COMPILER "${WIND_COMP}/ccppc")
+set(CMAKE_CXX_COMPILER "${WIND_COMP}/c++ppc")
+set(CMAKE_AR "${WIND_COMP}/arppc")
+set(CMAKE_RANLIB "${WIND_COMP}/ranlibppc")
 set(CMAKE_C_ARCHIVE_CREATE "${CMAKE_AR} cr <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_C_ARCHIVE_APPEND "${CMAKE_AR} r  <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_C_ARCHIVE_FINISH "${CMAKE_RANLIB} <TARGET>")
 set(CMAKE_CXX_ARCHIVE_CREATE "${CMAKE_C_ARCHIVE_CREATE}")
 set(CMAKE_CXX_ARCHIVE_APPEND "${CMAKE_C_ARCHIVE_APPEND}")
 set(CMAKE_CXX_ARCHIVE_FINISH "${CMAKE_C_ARCHIVE_FINISH}")
-set(CMAKE_ASM_ARCHIVE_APPEND "${CMAKE_C_ARCHIVE_APPEND}")
-set(CMAKE_ASM_ARCHIVE_FINISH "${CMAKE_C_ARCHIVE_FINISH}")
-set(CMAKE_ASM_ARCHIVE_CREATE "${CMAKE_C_ARCHIVE_CREATE}")
 
 set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CURRENT_LIST_DIR}/../helpers/VxWorks/VxWorksLink.py -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
-set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_CURRENT_LIST_DIR}/../helpers/VxWorks/VxWorksLink.py -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
 set(CMAKE_C_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER_WORKS 1)
 set(CMAKE_ASM_COMPILER_WORKS 1)
@@ -51,31 +54,32 @@ set(COMPILER_COMMON_FLAGS
     -Wno-sign-conversion \
     -ansi \
     -ftls-model=local-exec  \
-    -mcpu=leon3 \
-    -DCPU=_VX_SPARC \
-    -DCPU_VARIANT=_sparcleon \
+    -mcpu=powerpc \
+    -DCPU=_VX_PPC \
+    -DCPU_VARIANT=_ppc \
     -fno-zero-initialized-in-bss \
     -D_WRS_VX_SMP \
     -D_WRS_CONFIG_SMP \
+    -D_WRS_CONFIG_FOPEN_MAX_KERNEL=50 \
     -fno-builtin \
     -fno-strict-aliasing \
     -D_USE_INIT_ARRAY -Wall"
     )
-    
+
 set(CMAKE_C_FLAGS
     "${COMPILER_COMMON_FLAGS} \
     -std=c99 \
     -fno-cond-mismatch -pedantic \
     -Werror-implicit-function-declaration \
     -Wstrict-prototypes"
-    )  
+    )
 
 set(CMAKE_CXX_FLAGS
     "${COMPILER_COMMON_FLAGS} \
     -std=c++14   \
 	-fno-rtti \
     -Wnon-virtual-dtor"
-    )  
+    )
 
 # where is the target environment
 set(CMAKE_FIND_ROOT_PATH  "${WINDRIVER_TOOL_ROOT}")

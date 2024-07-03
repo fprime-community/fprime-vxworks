@@ -1,19 +1,105 @@
-#include <Os/Task.hpp>
-#include <Fw/Types/Assert.hpp>
-
 #include <vxWorks.h>
 #include <taskLib.h> // need it for VX_FP_TASK
 #include <sysLib.h>
 #include <tickLib.h>
 
-#include <errno.h>
-#include <string.h>
+#include <cstring>
+#include <unistd.h>
+#include <climits>
+#include <cerrno>
+#include <pthread.h>
 
+#include "Fw/Logger/Logger.hpp"
+#include "Fw/Types/Assert.hpp"
+#include "Os/Task.hpp"
+
+#include "Task.hpp"
+
+namespace Os {
+namespace VxWorks {
+namespace Task {
+
+    void VxWorksTask::onStart() {}
+
+    Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
+        FW_ASSERT(arguments.m_routine != nullptr);
+
+        this->m_args = arguments;
+        
+        // // If a registry has been registered, register task
+        // if (Task::s_taskRegistry) {
+        //     Task::s_taskRegistry->addTask(this);
+        // }
+        
+        NATIVE_INT_TYPE stat = taskCreate(
+            (char*)this->m_args.m_name.toChar(),
+            this->m_args.m_priority,
+            VX_FP_TASK,
+            this->m_args.m_stackSize,
+            (FUNCPTR) this->m_args.m_routine,
+            (int)this->m_args.m_routine_argument,0,0,0,0,0,0,0,0,0);
+        
+        if (ERROR == stat) {
+            return Os::Task::Status::UNKNOWN_ERROR; 
+        }
+        
+        this->m_handle.m_task_descriptor = (NATIVE_INT_TYPE)stat;
+        
+#ifdef _WRS_CONFIG_SMP
+        if (cpuAffinity != -1) {
+            cpuset_t aff;
+
+            CPUSET_ZERO (aff);
+            CPUSET_SET (aff, cpuAffinity);
+
+	    if (taskCpuAffinitySet (this->m_handle, aff) == ERROR) {
+               /* Either CPUs are not enabled or we are in UP mode */
+               taskDelete (this->m_handle);
+               return TASK_INVALID_AFFINITY;
+	    }
+
+        }
+#endif
+
+        stat = taskActivate(stat); // activate task
+        if (ERROR == stat) {
+            return Os::Task::Status::UNKNOWN_ERROR; 
+        }
+
+        return Os::Task::Status::OP_OK;
+    }
+
+    Os::Task::Status VxWorksTask::join() {
+        return Os::Task::Status::OP_OK;;
+    }
+
+    TaskHandle* VxWorksTask::getHandle() {
+        return &this->m_handle;
+    }
+
+    // Note: not implemented for Posix threads. Must be manually done using a mutex or other blocking construct as there
+    // is no top-level pthreads support for suspend and resume.
+    void VxWorksTask::suspend(Os::Task::SuspensionType suspensionType) {
+        FW_ASSERT(0);
+    }
+
+    void VxWorksTask::resume() {
+        FW_ASSERT(0);
+    }
+} // end namespace Task
+} // end namespace VxWorks
+} // end namespace Os
+
+
+
+#if 0
+
+// old!!!!
 namespace Os {
     Task::Task() : m_handle(0), m_identifier(0), m_affinity(-1), m_started(false), m_suspendedOnPurpose(false) {
     }
-    
-    Task::TaskStatus Task::start(const Fw::StringBase &name, NATIVE_INT_TYPE identifier, NATIVE_INT_TYPE priority, NATIVE_INT_TYPE stackSize, taskRoutine routine, void* arg, NATIVE_INT_TYPE cpuAffinity) {
+
+    Task::TaskStatus Task::start(const Fw::StringBase &name, taskRoutine routine, void* arg, NATIVE_UINT_TYPE priority, NATIVE_UINT_TYPE stackSize,  NATIVE_UINT_TYPE cpuAffinity, NATIVE_UINT_TYPE identifier) {
 
         this->m_name = "TV_";
         this->m_name += name;
@@ -113,3 +199,4 @@ namespace Os {
     }
 }
 
+#endif
