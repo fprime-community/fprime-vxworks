@@ -38,15 +38,7 @@
 ## STEP 1: Specify the OS type include directive i.e. LINUX or DARWIN
 add_definitions(-DTGT_OS_TYPE_VXWORKS)
 
-# STEP 2: Specify CMAKE C and CXX compile flags. DO NOT clear existing flags
-set(CMAKE_C_FLAGS
-  "${CMAKE_C_FLAGS} <ADD-C-FLAGS-HERE>"
-)
-set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} <ADD-CXX-FLAGS-HERE>"
-)
-
-# STEP 3: Specify that a thread package should be searched in the toolchain
+# STEP 2: Specify that a thread package should be searched in the toolchain
 #         directory. NOTE: when running without threads, remove this line.
 #         Here there is a check for the using baremetal scheduler
 if (NOT DEFINED FPRIME_USE_BAREMETAL_SCHEDULER)
@@ -55,8 +47,8 @@ if (NOT DEFINED FPRIME_USE_BAREMETAL_SCHEDULER)
    FIND_PACKAGE ( Threads REQUIRED )
 endif()
 
-# STEP 4: Specify a directory containing the "PlatformTypes.hpp" headers, as well
+# STEP 3: Specify a directory containing the "PlatformTypes.h" headers, as well
 #         as other system headers. Other global headers can be placed here.
 #         Note: Typically, the Linux directory is a good default, as it grabs
 #         standard types from <cstdint>.
-include_directories(SYSTEM "${FPRIME_FRAMEWORK_PATH}/Fw/Types/Linux")
+include_directories(SYSTEM "${CMAKE_CURRENT_LIST_DIR}/types")
