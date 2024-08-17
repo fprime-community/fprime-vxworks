@@ -7,12 +7,10 @@
 
 
 // VxWorks headers
-#define OK VX_OK
 #include <vxWorks.h>
 #include <taskLib.h> // need it for VX_FP_TASK
 #include <sysLib.h>
 #include <tickLib.h>
-#undef OK
 
 #include <atomic>
 
