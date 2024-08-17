@@ -28,19 +28,24 @@
 namespace Os {
 namespace VxWorks {
 namespace Task {
-
     //! TaskHandle class definition for VxWorks implementations.
     //!
     struct VxWorksTaskHandle : public TaskHandle {
         static constexpr PlatformIntType SUCCESS = 0;
 
         //! VxWorks task descriptor
-        FwNativeIntType m_task_descriptor;
+        TASK_ID m_task_descriptor;
     };
 
     //! VxWorks task implementation as driven by pthreads implementation
     class VxWorksTask : public TaskInterface {
       public:
+
+        //! Enumeration of permission expectations
+        enum PermissionExpectation {
+            EXPECT_PERMISSION, //!< Expect that you hold necessary permissions
+            EXPECT_NO_PERMISSION //!< Expect that you do not hold necessary permissions
+        };
 
         //! \brief default constructor
         VxWorksTask() = default;
@@ -97,9 +102,18 @@ namespace Task {
         //! \return internal task handle representation
         TaskHandle* getHandle() override;
       PRIVATE:
+        //! \brief create a configured pthread
+        //!
+        //! Creates, and configures, but does not start a pthread. This may be called twice, once to try setting
+        //! permissions and once to fallback to no permissions.
+        //!
+        //! \param arguments: arguments used to set priority, affinity, etc
+        //! \param permissions: whether to expect permissions or not
+        //! \return OP_OK on success, or an error
+        Status create(const Os::Task::Arguments& arguments, const VxWorksTask::PermissionExpectation permissions);
 
         VxWorksTaskHandle m_handle; //!< VxWorks task tracking
-        Arguments m_args; //!< Store arguments
+        static std::atomic<bool> s_permissions_reported; //!< Permission errors have been reported
     };
 } // end namespace Task
 } // end namespace VxWorks

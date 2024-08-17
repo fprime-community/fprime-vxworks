@@ -15,6 +15,12 @@ namespace VxWorks {
 //!
 Os::Task::Status vxworks_status_to_task_status(PlatformIntType vxworks_status);
 
+//! Convert a VxWorks return status (int) for mutex operations to the Os::Mutex::Status representation.
+//! \param vxworks_status: return status
+//! \return: Os::Mutex::Status representation of the error
+//!
+Os::Mutex::Status vxworks_status_to_mutex_status(PlatformIntType vxworks_status);
+
 }
 }
 #endif

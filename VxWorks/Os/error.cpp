@@ -30,5 +30,24 @@ Task::Status vxworks_status_to_task_status(PlatformIntType vxworks_status) {
     return status;
 }
 
+Mutex::Status vxworks_status_to_mutex_status(PlatformIntType vxworks_status){
+    Mutex::Status status = Mutex::Status::ERROR_OTHER;
+    switch (vxworks_status) {
+        case 0:
+            status = Mutex::Status::OP_OK;
+            break;
+        case EBUSY:
+            status = Mutex::Status::ERROR_BUSY;
+            break;
+        case EDEADLK:
+            status = Mutex::Status::ERROR_DEADLOCK;
+            break;
+        default:
+            status = Mutex::Status::ERROR_OTHER;
+            break;
+    }
+    return status;
+}
+
 }
 }

@@ -19,50 +19,60 @@ namespace Os {
 namespace VxWorks {
 namespace Task {
 
+    //!< This wrapper is needed due to the change in FUNCPTR's signature
+    //!< from VxWorks6 to VxWorks7. This static function implements the
+    //!< FUNCPTR signature required by VxWorks7 and calls the routine
+    //!< with the provides arg. This wrapper function is expected to be
+    //!< passed in to taskCreate.
+    static int myRoutineWrapper(
+        Os::TaskInterface::taskRoutine routine, //!< Routine that should run in a thread
+        void* arg //!< Argument passed to the routine
+    )
+    {
+        routine(arg);
+        return VXWORKS_OK;
+    }
+
     void VxWorksTask::onStart() {}
 
     Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
         FW_ASSERT(arguments.m_routine != nullptr);
-
-        this->m_args = arguments;
-        
-        // // If a registry has been registered, register task
-        // if (Task::s_taskRegistry) {
-        //     Task::s_taskRegistry->addTask(this);
-        // }
-        
-        NATIVE_INT_TYPE stat = taskCreate(
-            (char*)this->m_args.m_name.toChar(),
-            this->m_args.m_priority,
+        char taskName[arguments.m_name.getCapacity()];
+        memcpy(taskName, arguments.m_name.toChar(), arguments.m_name.getCapacity());
+        TASK_ID taskId = taskCreate(
+            taskName,
+            arguments.m_priority,
             VX_FP_TASK,
-            this->m_args.m_stackSize,
-            (FUNCPTR) this->m_args.m_routine,
-            (int)this->m_args.m_routine_argument,0,0,0,0,0,0,0,0,0);
+            arguments.m_stackSize,
+            reinterpret_cast<FUNCPTR>(myRoutineWrapper),
+            0,0,0,0,0,0,0,0,0,0);
+//TODO
+            //reinterpret_cast<int>(arguments.m_routine_argument),0,0,0,0,0,0,0,0,0);
         
-        if (ERROR == stat) {
+        if (TASK_ID_NULL == taskId) {
             return Os::Task::Status::UNKNOWN_ERROR; 
         }
         
-        this->m_handle.m_task_descriptor = (NATIVE_INT_TYPE)stat;
+        this->m_handle.m_task_descriptor = taskId;
         
 #ifdef _WRS_CONFIG_SMP
-        if (cpuAffinity != -1) {
+        if (arguments.m_cpuAffinity != -1) {
             cpuset_t aff;
 
             CPUSET_ZERO (aff);
-            CPUSET_SET (aff, cpuAffinity);
+            CPUSET_SET (aff, arguments.m_cpuAffinity);
 
-	    if (taskCpuAffinitySet (this->m_handle, aff) == ERROR) {
+	    if (taskCpuAffinitySet (this->m_handle.m_task_descriptor, aff) == ERROR) {
                /* Either CPUs are not enabled or we are in UP mode */
-               taskDelete (this->m_handle);
-               return TASK_INVALID_AFFINITY;
+               taskDelete (this->m_handle.m_task_descriptor);
+               return Os::Task::Status::INVALID_AFFINITY;
 	    }
 
         }
 #endif
 
-        stat = taskActivate(stat); // activate task
-        if (ERROR == stat) {
+        auto status = taskActivate(taskId); // activate task
+        if (ERROR == status) {
             return Os::Task::Status::UNKNOWN_ERROR; 
         }
 
