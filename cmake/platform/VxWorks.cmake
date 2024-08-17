@@ -38,12 +38,14 @@
 ## STEP 1: Specify the OS type include directive i.e. LINUX or DARWIN
 add_definitions(-DTGT_OS_TYPE_VXWORKS)
 
-choose_fprime_implementation(Os/File Os/File/Stub)
-choose_fprime_implementation(Os/Task Os/Task/VxWorks)
-
 # VxWorks is mostly Posix compliant. So turn this on.
 add_definitions(-D_POSIX_C_SOURCE)
 set(FPRIME_USE_POSIX ON)
+
+choose_fprime_implementation(Os/File Os/File/Stub)
+choose_fprime_implementation(Os/Console Os/Console/VxWorks)
+choose_fprime_implementation(Os/Task Os/Task/VxWorks)
+choose_fprime_implementation(Os/Mutex Os/Mutex/VxWorks)
 
 # STEP 3: Specify a directory containing the "PlatformTypes.h" headers, as well
 #         as other system headers. Other global headers can be placed here.
