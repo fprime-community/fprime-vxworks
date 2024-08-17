@@ -1,58 +1,33 @@
 ####
 # F prime CMakeLists.txt:
 #
-# SOURCE_FILES: combined list of source and autocoding diles
+# SOURCE_FILES: combined list of source and autocoding files
 # MOD_DEPS: (optional) module dependencies
 #
 ####
-cmake_minimum_required(VERSION 3.13)
-cmake_policy(SET CMP0079 NEW)
+add_custom_target("${FPRIME_CURRENT_MODULE}")
 
-get_directory_property(COMP_DEFS COMPILE_DEFINITIONS)
+#### Shared Section ####
+set(SOURCE_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/error.cpp"
+)
+set(HEADER_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/error.hpp"
+)
+register_fprime_module(Os_VxWorks_Shared)
+
+#### VxWorks/Os/Task Section ####
+list(APPEND SOURCE_FILES
+    "Task.cpp"
+)
 
 set(MOD_DEPS
-        "${CMAKE_THREAD_LIBS_INIT}"
-        Fw/Cfg
-        Fw/Types
-        Fw/Logger
-        Utils/Hash
-        )
+      Os_VxWorks_Shared
+      Fw/Time
+      Os
+)
 
-if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
-  set(SOURCE_FILES
-        "Queue.cpp"
-        "Task.cpp"
-        "Log.cpp"
-        "WatchdogTimer.cpp"
-        "InterruptLock.cpp"
-        "TaskLock.cpp"
-        "${FPRIME_FRAMEWORK_PATH}/Os/Posix/IntervalTimer.cpp"
-        "Mutex.cpp"
-        "RTSleep.c"
-        "TaskId.cpp"
-        "Event.cpp"
-        # Non-VxWorks basic support
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/FileSystem.cpp"
-      )
-else()
-  set(SOURCE_FILES
-        "${FPRIME_FRAMEWORK_PATH}/Os/Baremetal/File.cpp"
-     )
-endif()
+register_fprime_module(Os_Task_VxWorks)
+register_fprime_implementation(Os/Task Os_Task_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultTask.cpp")
 
-# If baremetal scheduler is set, remove the previous task files and add in the Baremetal variant
-if (BAREMETAL_SCHEDULER)
-    add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Baremetal/TaskRunner/")
-    list(FILTER SOURCE_FILES EXCLUDE REGEX "Task\.cpp")
-endif ()
-register_fprime_module()
-
-if(COMP_DEFS MATCHES "TGT_OS_TYPE_VXWORKS")
-    add_dependencies(Os fprime-vxworks_VxWorks)
-    target_link_libraries(Os fprime-vxworks_VxWorks)
-    target_link_libraries(fprime-vxworks_VxWorks Os) #Power overwhelming
-endif()
-
-
-
+choose_fprime_implementation(Os/Task Os_Task_VxWorks)
