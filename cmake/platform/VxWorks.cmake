@@ -38,15 +38,6 @@
 ## STEP 1: Specify the OS type include directive i.e. LINUX or DARWIN
 add_definitions(-DTGT_OS_TYPE_VXWORKS)
 
-# STEP 2: Specify that a thread package should be searched in the toolchain
-#         directory. NOTE: when running without threads, remove this line.
-#         Here there is a check for the using baremetal scheduler
-if (NOT DEFINED FPRIME_USE_BAREMETAL_SCHEDULER)
-   set(FPRIME_USE_BAREMETAL_SCHEDULER OFF)
-   message(STATUS "Requiring thread library")
-   FIND_PACKAGE ( Threads REQUIRED )
-endif()
-
 # STEP 3: Specify a directory containing the "PlatformTypes.h" headers, as well
 #         as other system headers. Other global headers can be placed here.
 #         Note: Typically, the Linux directory is a good default, as it grabs
