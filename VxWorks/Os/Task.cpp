@@ -81,7 +81,7 @@ namespace Task {
 
     Os::Task::Status VxWorksTask::join() {
         // There is no task join in taskLib.
-        return Os::Task::Status::OP_ERROR;;
+        return Os::Task::Status::JOIN_ERROR;;
     }
 
     TaskHandle* VxWorksTask::getHandle() {
@@ -89,12 +89,12 @@ namespace Task {
     }
 
     void VxWorksTask::suspend(Os::Task::SuspensionType /*suspensionType*/) {
-        Status status = taskSuspend(this->m_handle.m_task_descriptor);
+        STATUS status = taskSuspend(this->m_handle.m_task_descriptor);
         FW_ASSERT(status == VXWORKS_OK, status);
     }
 
     void VxWorksTask::resume() {
-        Status status = taskResume(this->m_handle.m_task_descriptor);
+        STATUS status = taskResume(this->m_handle.m_task_descriptor);
         FW_ASSERT(status == OK, status);
     }
 } // end namespace Task
