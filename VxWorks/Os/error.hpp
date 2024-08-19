@@ -2,9 +2,11 @@
 // \title VxWorks/Os/error.hpp
 // \brief header for VxWorks errno conversion
 // ======================================================================
-#include "Os/Task.hpp"
 #ifndef OS_VXWORKS_ERRNO_HPP
 #define OS_VXWORKS_ERRNO_HPP
+
+#include "Os/Task.hpp"
+#include <semLib.h>
 
 namespace Os {
 namespace VxWorks {
@@ -19,7 +21,7 @@ Os::Task::Status vxworks_status_to_task_status(PlatformIntType vxworks_status);
 //! \param vxworks_status: return status
 //! \return: Os::Mutex::Status representation of the error
 //!
-Os::Mutex::Status vxworks_status_to_mutex_status(PlatformIntType vxworks_status);
+Os::Mutex::Status vxworks_status_to_mutex_status(STATUS vxworks_status);
 
 }
 }

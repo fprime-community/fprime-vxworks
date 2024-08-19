@@ -12,7 +12,7 @@ namespace VxWorks {
 namespace Mutex {
 
 struct VxWorksMutexHandle : public MutexHandle {
-    pthread_mutex_t m_mutex_descriptor = PTHREAD_MUTEX_INITIALIZER;
+    SEM_ID m_mutex_descriptor = SEM_ID_NULL;
 };
 
 //! \brief VxWorks implementation of Os::Mutex

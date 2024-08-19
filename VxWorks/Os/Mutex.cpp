@@ -11,36 +11,22 @@ namespace VxWorks {
 namespace Mutex {
 
 VxWorksMutex::VxWorksMutex() : Os::MutexInterface(), m_handle() {
-    // set attributes
-    pthread_mutexattr_t attribute;
-    PlatformIntType status = pthread_mutexattr_init(&attribute);
-    FW_ASSERT(status == 0, status);
-
-    // set to normal mutex type
-    status = pthread_mutexattr_settype(&attribute, PTHREAD_MUTEX_NORMAL);
-    FW_ASSERT(status == 0, status);
-
-    // set to check for priority inheritance
-    status = pthread_mutexattr_setprotocol(&attribute, PTHREAD_PRIO_INHERIT);
-    FW_ASSERT(status == 0, status);
-
-    status = pthread_mutex_init(&this->m_handle.m_mutex_descriptor, &attribute);
-    FW_ASSERT(status == 0, status);
+  this->m_handle.m_mutex_descriptor = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+  FW_ASSERT(this->m_handle.m_mutex_descriptor != SEM_ID_NULL);
 }
 
 VxWorksMutex::~VxWorksMutex() {
-    PlatformIntType status = pthread_mutex_destroy(&this->m_handle.m_mutex_descriptor);
-    FW_ASSERT(status == 0, status);
+    (void)semDelete(this->m_handle.m_mutex_descriptor);
 }
 
 VxWorksMutex::Status VxWorksMutex::take() {
-    PlatformIntType status = pthread_mutex_lock(&this->m_handle.m_mutex_descriptor);
-    return Os::VxWorks::vxworks_status_to_mutex_status(status);
+  STATUS status = semTake(this->m_handle.m_mutex_descriptor, WAIT_FOREVER);
+  return Os::VxWorks::vxworks_status_to_mutex_status(status);
 }
 
 VxWorksMutex::Status VxWorksMutex::release() {
-    PlatformIntType status = pthread_mutex_unlock(&this->m_handle.m_mutex_descriptor);
-    return Os::VxWorks::vxworks_status_to_mutex_status(status);
+  STATUS status = semGive(this->m_handle.m_mutex_descriptor);
+  return Os::VxWorks::vxworks_status_to_mutex_status(status);
 }
 
 MutexHandle* VxWorksMutex::getHandle() {
