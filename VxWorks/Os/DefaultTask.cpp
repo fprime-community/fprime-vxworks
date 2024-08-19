@@ -20,7 +20,7 @@ namespace Os {
         
         U32 ticks = ((milliseconds * sysClkRateGet() + 999) / 1000);
         
-        if (taskDelay(ticks) == VX_OK) {
+        if (taskDelay(ticks) == VXWORKS_OK) {
             status = Os::Task::Status::OP_OK;
         }
         return status;
