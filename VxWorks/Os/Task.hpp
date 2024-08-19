@@ -2,8 +2,8 @@
 // \title VxWorks/Os/Task.hpp
 // \brief definitions of VxWorks implementation of Os::Task
 // ======================================================================
-#ifndef Os_VxWorks_Task_hpp_
-#define Os_VxWorks_Task_hpp_
+#ifndef OS_VXWORKS_TASK_HPP
+#define OS_VXWORKS_TASK_HPP
 
 
 // VxWorks headers
@@ -83,9 +83,7 @@ namespace Task {
 
         //! \brief suspend the task given the suspension type
         //!
-        //! Suspends the task. Some implementations track if the suspension of a task was intentional or
-        //! unintentional. The supplied `suspensionType` parameter indicates that this was intentional or
-        //! unintentional. The type of suspension is also returned when calling `isSuspended`.
+        //! suspensionType argument is not used.
         //!
         //! \param suspensionType intentionality of the suspension
         void suspend(SuspensionType suspensionType) override;

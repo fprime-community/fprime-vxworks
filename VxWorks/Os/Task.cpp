@@ -80,21 +80,22 @@ namespace Task {
     }
 
     Os::Task::Status VxWorksTask::join() {
-        return Os::Task::Status::OP_OK;;
+        // There is no task join in taskLib.
+        return Os::Task::Status::OP_ERROR;;
     }
 
     TaskHandle* VxWorksTask::getHandle() {
         return &this->m_handle;
     }
 
-    // Note: not implemented for Posix threads. Must be manually done using a mutex or other blocking construct as there
-    // is no top-level pthreads support for suspend and resume.
-    void VxWorksTask::suspend(Os::Task::SuspensionType suspensionType) {
-        FW_ASSERT(0);
+    void VxWorksTask::suspend(Os::Task::SuspensionType /*suspensionType*/) {
+        Status status = taskSuspend(this->m_handle.m_task_descriptor);
+        FW_ASSERT(status == VXWORKS_OK, status);
     }
 
     void VxWorksTask::resume() {
-        FW_ASSERT(0);
+        Status status = taskResume(this->m_handle.m_task_descriptor);
+        FW_ASSERT(status == OK, status);
     }
 } // end namespace Task
 } // end namespace VxWorks
