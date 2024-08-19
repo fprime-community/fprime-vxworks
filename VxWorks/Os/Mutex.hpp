@@ -4,8 +4,8 @@
 // ======================================================================
 #ifndef OS_VXWORKS_MUTEX_HPP
 #define OS_VXWORKS_MUTEX_HPP
-#include <pthread.h>
 #include <Os/Mutex.hpp>
+#include <semLib.h>
 
 namespace Os {
 namespace VxWorks {

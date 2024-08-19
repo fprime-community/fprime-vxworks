@@ -2,8 +2,8 @@
 // \title VxWorks/Os/Mutex.cpp
 // \brief VxWorks implementation for Os::Mutex
 // ======================================================================
-#include "Mutex.hpp"
-#include "error.hpp"
+#include "VxWorks/Os/Mutex.hpp"
+#include "VxWorks/Os/error.hpp"
 #include <Fw/Types/Assert.hpp>
 
 namespace Os {
