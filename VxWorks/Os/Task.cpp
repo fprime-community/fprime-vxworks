@@ -1,19 +1,17 @@
 #include <vxWorks.h>
 #include <taskLib.h> // need it for VX_FP_TASK
 #include <sysLib.h>
-#include <tickLib.h>
 
 #include <cstring>
 #include <unistd.h>
 #include <climits>
 #include <cerrno>
-#include <pthread.h>
 
-#include "Fw/Logger/Logger.hpp"
 #include "Fw/Types/Assert.hpp"
+#include "Fw/Types/BasicTypes.hpp"
 #include "Os/Task.hpp"
 
-#include "Task.hpp"
+#include "VxWorks/Os/Task.hpp"
 
 namespace Os {
 namespace VxWorks {
@@ -37,11 +35,18 @@ namespace Task {
 
     Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
         FW_ASSERT(arguments.m_routine != nullptr);
+
+        // Get taskName into a non-const variable because that is what
+        // VxWorks' taskCreate wants.
         char taskName[arguments.m_name.getCapacity()];
         memcpy(taskName, arguments.m_name.toChar(), arguments.m_name.getCapacity());
+
+        // convert priority from Posix range to VxWorks range
+        PlatformIntType vxPriority = 255 - arguments.m_priority;
+
         TASK_ID taskId = taskCreate(
             taskName,
-            arguments.m_priority,
+            vxPriority,
             VX_FP_TASK,
             arguments.m_stackSize,
             reinterpret_cast<FUNCPTR>(myRoutineWrapper),
