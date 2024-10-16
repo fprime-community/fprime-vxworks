@@ -40,46 +40,45 @@ set(CMAKE_C_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER_WORKS 1)
 set(CMAKE_ASM_COMPILER_WORKS 1)
 
-
 set(COMPILER_COMMON_FLAGS
     "-DTGT_OS_TYPE_VXWORKS \
     -DTGT_OS_TYPE_VXWORKS7 \
-    -D_VSB_CONFIG_FILE=\\\"/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWorks7-Rad750-V1.2-6U/vsb_rad750/h/config/vsbConfig.h\\\" \
-    -mcpu=604 \
-    -DCPU=_VX_PPC604 \
-    -DTOOL_FAMILY=llvm \
-    -DTOOL=llvm \
-    -D_WRS_KERNEL \
-    -mno-spe \
-    -D_WRS_HARDWARE_FP \
-    -mlong-double-64 \
-    -msoft-float \
-    -D__ppc \
-    -D__ppc__ \
-    -D_PPC_NOSDA_NOTOC \
-    -D_WRS_PPC_NO_MCRXR \
-    --target=ppc32  \
+    -D_VSB_CONFIG_FILE=\\\"/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWork7-PFSOC/vsb_pfsoc/h/config/vsbConfig.h\\\" \
+    --target=riscv64 \
+    -march=rv64imafdc \
+    -mabi=lp64d \
+    -mcmodel=medlow \
+    -mno-implicit-float \
+    -std=c11 \
     -D__vxworks \
     -D__VXWORKS__ \
     -D__ELF__ \
-    -D_HAVE_TOOL_XTORS \
+    -D_HAVE_TOOL_XTORS  \
     -nostdlibinc \
+    -nostdinc++ \
     -ftls-model=local-exec \
     -fno-builtin \
-    -fno-strict-aliasing \
+    -fno-strict-aliasing   \
     -D_USE_INIT_ARRAY \
     -fwrapv \
     -mllvm \
     -two-entry-phi-node-folding-threshold=2 \
     -fno-unwind-tables \
     -fno-asynchronous-unwind-tables \
-    -Wall -Wconversion -Wno-sign-conversion \
+    -Wall \
+    -Wconversion \
+    -Wno-sign-conversion \
     -Wno-unused-but-set-variable \
-    -Wno-deprecated-non-prototype  \
-    -Wno-missing-braces \
+    -Wno-deprecated-non-prototype    \
     -MD \
     -MP \
-    -mlongcall   
+    -mno-relax \
+    -DCPU=_VX_RISCV \
+    -DTOOL_FAMILY=llvm \
+    -DTOOL=llvm \
+    -D_WRS_KERNEL \
+    -D_WRS_VX_SMP \
+    -D_WRS_CONFIG_SMP \
     "
 )
     
