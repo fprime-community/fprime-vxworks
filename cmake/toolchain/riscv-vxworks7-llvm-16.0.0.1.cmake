@@ -2,6 +2,7 @@
 set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR pfsoc)
+set(FPRIME_PLATFORM vxworks-pfsoc)
 
 set(WIND_BASE $ENV{WIND_BASE})
 set(VSB_HOME $ENV{VSB_HOME})
@@ -43,7 +44,7 @@ set(CMAKE_ASM_COMPILER_WORKS 1)
 set(COMPILER_COMMON_FLAGS
     "-DTGT_OS_TYPE_VXWORKS \
     -DTGT_OS_TYPE_VXWORKS7 \
-    -D_VSB_CONFIG_FILE=\\\"/opt/tools/VISAR/VxWorks-BSPs/VxWorks7/VxWork7-PFSOC/vsb_pfsoc/h/config/vsbConfig.h\\\" \
+    -D_VSB_CONFIG_FILE=\\\"/home/tcanham/source/VxWorks-BSPs/VxWorks7/VxWorks7-PFSOC/vsb_pfsoc/h/config/vsbConfig.h\\\" \
     --target=riscv64 \
     -march=rv64imafdc \
     -mabi=lp64d \
@@ -85,10 +86,14 @@ set(COMPILER_COMMON_FLAGS
 set(CMAKE_C_FLAGS
     "${COMPILER_COMMON_FLAGS} \
     -std=c99 \
-    -fno-cond-mismatch -pedantic \
     -Werror-implicit-function-declaration \
     -Wstrict-prototypes"
     )  
+
+# Rejected by clang
+#     -fno-cond-mismatch -pedantic \
+
+
 
 set(CMAKE_CXX_FLAGS
     "${COMPILER_COMMON_FLAGS} \
