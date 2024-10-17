@@ -13,7 +13,7 @@
 # choose_fprime_implementation(Os/Memory Os/Memory/Linux)
 
 choose_fprime_implementation(Os/File Os/File/Stub)
-choose_fprime_implementation(Os/Console Os/Console/Stub)
+choose_fprime_implementation(Os/Console Os/Console/Posix)
 choose_fprime_implementation(Os/Task Os/Task/Posix)
 choose_fprime_implementation(Os/Mutex Os/Mutex/Posix)
 choose_fprime_implementation(Os/Queue Os/Generic/PriorityQueue)
