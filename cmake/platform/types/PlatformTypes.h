@@ -26,15 +26,25 @@
 
 #include <vxWorks.h>
 
-// Work around for annoying VxWorks OK and NO_WAIT macros that collide with F Prime.
+// Capture current value of VxWorks constants
+enum VxWorksConstants {
+    VXWORKS_ERROR=ERROR,
+    VXWORKS_READ=READ,
+    VXWORKS_OK=OK,
+    VXWORKS_NO_WAIT=NO_WAIT
+};
 #undef OK
-#define OK VXWORKS_OK
-enum { VXWORKS_OK = 0 };
-
+#undef ERROR
+#undef READ
 #undef NO_WAIT
-#define NO_WAIT VXWORKS_NO_WAIT
-enum {VXWORKS_NO_WAIT = 0 };
 
+// Redefine constants as enumeration 
+enum {
+    ERROR=VXWORKS_ERROR,
+    READ=VXWORKS_READ,
+    OK=VXWORKS_OK,
+    NO_WAIT=VXWORKS_NO_WAIT
+};
 #include <inttypes.h>
 #include <stdint.h>
 
@@ -67,6 +77,12 @@ typedef uint64_t PlatformSizeType;
 
 typedef PlatformIntType PlatformAssertArgType;
 #define PRI_PlatformAssertArgType PRI_PlatformIntType
+
+typedef PlatformIntType PlatformTaskPriorityType;
+#define PRI_PlatformTaskPriorityType PRI_PlatformIntType
+
+typedef PlatformIntType PlatformQueuePriorityType;
+#define PRI_PlatformQueuePriorityType PRI_PlatformIntType
 
 // Linux/Darwin definitions for pointer have various sizes across platforms
 // and since these definitions need to be consistent we must ask the size.
