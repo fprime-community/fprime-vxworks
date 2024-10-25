@@ -24,7 +24,9 @@ list(APPEND SOURCE_FILES
 register_fprime_module(Os_Task_VxWorks)
 register_fprime_implementation(Os/Task Os_Task_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultTask.cpp")
 
-#### VxWorks/Os/Console Section ####
+##########################################
+####    VxWorks/Os/Console Section    ####
+##########################################
 list(APPEND SOURCE_FILES
     "Console.cpp"
 )
@@ -32,14 +34,15 @@ list(APPEND SOURCE_FILES
 register_fprime_module(Os_Console_VxWorks)
 register_fprime_implementation(Os/Console Os_Console_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp")
 
-#### VxWorks/Os/Mutex Section ####
+##########################################
+####    VxWorks/Os/Mutex Section    ####
+##########################################
 list(APPEND SOURCE_FILES
     "Mutex.cpp"
 )
 
 register_fprime_module(Os_Mutex_VxWorks)
 register_fprime_implementation(Os/Mutex Os_Mutex_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultMutex.cpp")
-
 
 # Finish setup
 

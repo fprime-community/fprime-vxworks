@@ -2,8 +2,8 @@
 // \title VxWorks/Os/Console.hpp
 // \brief VxWorks implementation for Os::Console, header and test definitions
 // ======================================================================
-#include <cstdio>
 #include <Os/Console.hpp>
+#include <cstdio>
 #ifndef OS_VXWORKS_Console_HPP
 #define OS_VXWORKS_Console_HPP
 
@@ -20,16 +20,16 @@ struct VxWorksConsoleHandle : public ConsoleHandle {
 
 //! \brief VxWorks implementation of Os::ConsoleInterface
 //!
-//! VxWorks implementation of `ConsoleInterface` for use as a delegate class handling VxWorks console operations. VxWorks
-//! consoles write to either standard out or standard error. The default file descriptor used is standard out. This may
-//! be changed by calling `setOutputStream`.
+//! VxWorks implementation of `ConsoleInterface` for use as a delegate class handling VxWorks console operations.
+//! VxWorks consoles write to either standard out or standard error. The default file descriptor used is standard out.
+//! This may be changed by calling `setOutputStream`.
 //!
 class VxWorksConsole : public ConsoleInterface {
   public:
     //! Stream selection enumeration
     enum Stream {
-        STANDARD_OUT = 0, //!< Use standard output stream
-        STANDARD_ERROR = 1 //!< Use standard error stream
+        STANDARD_OUT = 0,   //!< Use standard output stream
+        STANDARD_ERROR = 1  //!< Use standard error stream
     };
     //! \brief constructor
     //!
@@ -56,8 +56,7 @@ class VxWorksConsole : public ConsoleInterface {
     //!
     //! \param message: raw message to write
     //! \param size: size of the message to write to the console
-    void writeMessage(const CHAR *message, const FwSizeType size) override;
-
+    void writeMessage(const CHAR* message, const FwSizeType size) override;
 
     //! \brief returns the raw console handle
     //!
@@ -66,7 +65,7 @@ class VxWorksConsole : public ConsoleInterface {
     //!
     //! \return raw console handle
     //!
-    ConsoleHandle *getHandle() override;
+    ConsoleHandle* getHandle() override;
 
     //! \brief select the output stream
     //!
@@ -78,8 +77,8 @@ class VxWorksConsole : public ConsoleInterface {
     //! File handle for VxWorksFile
     VxWorksConsoleHandle m_handle;
 };
-} // namespace Console
-} // namespace VxWorks
-} // namespace Os
+}  // namespace Console
+}  // namespace VxWorks
+}  // namespace Os
 
-#endif // OS_VXWORKS_Console_HPP
+#endif  // OS_VXWORKS_Console_HPP
