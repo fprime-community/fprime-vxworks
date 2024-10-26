@@ -7,7 +7,8 @@
 #include "VxWorks/Os/Console.hpp"
 
 namespace Os {
-ConsoleInterface* ConsoleInterface::getDelegate(HandleStorage& aligned_new_memory, const ConsoleInterface* to_copy) {
+ConsoleInterface* ConsoleInterface::getDelegate(ConsoleHandleStorage& aligned_new_memory,
+                                                const ConsoleInterface* to_copy) {
     return Os::Delegate::makeDelegate<ConsoleInterface, Os::VxWorks::Console::VxWorksConsole>(aligned_new_memory,
                                                                                               to_copy);
 }

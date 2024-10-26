@@ -40,7 +40,7 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
     memcpy(taskName, arguments.m_name.toChar(), arguments.m_name.getCapacity());
 
     // convert priority from Posix range to VxWorks range
-    PlatformIntType vxPriority = 255 - arguments.m_priority;
+    PlatformIntType vxPriority = static_cast<PlatformIntType>(255 - arguments.m_priority);
 
     this->m_handle.m_task_descriptor =
         taskCreate(taskName, vxPriority, VX_FP_TASK, arguments.m_stackSize, reinterpret_cast<FUNCPTR>(myRoutineWrapper),
@@ -95,7 +95,7 @@ void VxWorksTask::resume() {
     FW_ASSERT(status == OK, static_cast<FwAssertArgType>(status));
 }
 
-Os::Task::Status VxWOrksTask::_delay(Fw::TimeInterval interval) {
+Os::Task::Status VxWorksTask::_delay(Fw::TimeInterval interval) {
     // Lookup the number of clock ticks for the specified
     // number of milliseconds. Use the ticks to call the
     // task delay function call.
