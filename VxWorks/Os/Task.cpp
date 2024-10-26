@@ -44,9 +44,7 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
 
     this->m_handle.m_task_descriptor =
         taskCreate(taskName, vxPriority, VX_FP_TASK, arguments.m_stackSize, reinterpret_cast<FUNCPTR>(myRoutineWrapper),
-                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    // TODO
-    // reinterpret_cast<int>(arguments.m_routine_argument),0,0,0,0,0,0,0,0,0);
+                   reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine_argument), 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     if (this->m_handle.m_task_descriptor == TASK_ID_NULL) {
         return Os::Task::Status::UNKNOWN_ERROR;
