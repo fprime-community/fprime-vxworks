@@ -16,7 +16,9 @@ set(HEADER_FILES
 )
 register_fprime_module(Os_VxWorks_Shared)
 
-#### VxWorks/Os/Task Section ####
+##########################################
+####    VxWorks/Os/Task Section    ####
+##########################################
 list(APPEND SOURCE_FILES
     "Task.cpp"
 )
