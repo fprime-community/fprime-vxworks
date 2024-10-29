@@ -5,10 +5,11 @@
 # Sphinx, Sabertooth and other hosts.
 ####
 
-# Set VxWorks target
-add_definitions(-DTGT_OS_TYPE_VXWORKS)
-add_definitions(-D_WRS_KERNEL)
-add_definitions(-D__INCvsbConfig_h)
-
-# Add VxWorks specific headers into the system
-include_directories(SYSTEM "${FPRIME_FRAMEWORK_PATH}/Fw/Types/VxWorks")
+choose_fprime_implementation(Os/Console Os/Console/VxWorks)
+choose_fprime_implementation(Os/Cpu Os/Cpu/Stub)
+choose_fprime_implementation(Os/File Os/File/Stub)
+choose_fprime_implementation(Os/Memory Os/Memory/Stub)
+choose_fprime_implementation(Os/Mutex Os/Mutex/VxWorks)
+choose_fprime_implementation(Os/Queue Os/Generic/PriorityQueue)
+choose_fprime_implementation(Os/RawTime Os/RawTime/Stub)
+choose_fprime_implementation(Os/Task Os/Task/VxWorks)
