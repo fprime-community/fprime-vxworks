@@ -44,7 +44,7 @@ set(CMAKE_ASM_COMPILER_WORKS 1)
 set(COMPILER_COMMON_FLAGS
     "-DTGT_OS_TYPE_VXWORKS \
     -DTGT_OS_TYPE_VXWORKS7 \
-    -D_VSB_CONFIG_FILE=\\\"/home/ortega/toolchains/vxworks/vxworks/24.03/samples/prebuilt_projects/vsb_itl_generic/h/config/vsbConfig.h\\\" \
+    -D_VSB_CONFIG_FILE=\\\"${VSB_HOME}/h/config/vsbConfig.h\\\" \
     --target=x86_64 \
     -march=core2 \
     -mcmodel=large \
