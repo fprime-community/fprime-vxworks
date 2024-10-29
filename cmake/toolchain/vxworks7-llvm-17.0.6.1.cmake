@@ -4,9 +4,8 @@ set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR x86)
 set(FPRIME_PLATFORM vxworks-llvm)
 
-# These three environment variables should be defined
+# These environment variables should be defined
 # in the project's environment's .ini file
-set(WIND_BASE $ENV{WIND_BASE})
 set(VSB_HOME $ENV{VSB_HOME})
 set(WINDRIVER_COMPILER_ROOT $ENV{WINDRIVER_COMPILER_ROOT})
 
