@@ -46,37 +46,47 @@ set(COMPILER_COMMON_FLAGS
     -D_VSB_CONFIG_FILE=\\\"${VSB_HOME}/h/config/vsbConfig.h\\\" \
     --target=x86_64 \
     -march=core2 \
+    -m64 \
     -mcmodel=large \
+    -mno-red-zone \
+    -nostdlib \
+    -fno-omit-frame-pointer \
     -mno-implicit-float \
     -std=c11 \
     -D__vxworks \
     -D__VXWORKS__ \
     -D__ELF__ \
-    -D_HAVE_TOOL_XTORS  \
+    -D_HAVE_TOOL_XTORS \
     -nostdlibinc \
     -nostdinc++ \
     -ftls-model=local-exec \
     -fno-builtin \
-    -fno-strict-aliasing   \
+    -fno-strict-aliasing \
     -D_USE_INIT_ARRAY \
     -fwrapv \
     -mllvm \
     -two-entry-phi-node-folding-threshold=2 \
     -fno-unwind-tables \
     -fno-asynchronous-unwind-tables \
+    -fdebug-default-version=4 \
+    -fdollars-in-identifiers \
     -Wall \
     -Wconversion \
     -Wno-sign-conversion \
     -Wno-unused-but-set-variable \
-    -Wno-deprecated-non-prototype    \
+    -Wno-deprecated-non-prototype \
     -MD \
     -MP \
+    -I${VSB_HOME}/share/h \
+    -isystem${VSB_HOME}/krnl/h/system \
+    -isystem${VSB_HOME}/krnl/h/public \
     -DCPU=_VX_CORE \
     -DTOOL_FAMILY=llvm \
     -DTOOL=llvm \
     -D_WRS_KERNEL \
     -D_WRS_VX_SMP \
     -D_WRS_CONFIG_SMP \
+    -pedantic \
     "
 )
     
@@ -88,14 +98,14 @@ set(CMAKE_C_FLAGS
     )  
 
 # Rejected by clang
-#     -fno-cond-mismatch -pedantic \
+#     -fno-cond-mismatch \
 
 
 
 set(CMAKE_CXX_FLAGS
     "${COMPILER_COMMON_FLAGS} \
     -std=c++14   \
-	-fno-rtti \
+    -fno-rtti \
     -Wnon-virtual-dtor"
     )  
 
