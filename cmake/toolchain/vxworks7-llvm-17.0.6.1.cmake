@@ -4,16 +4,16 @@ set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR x86)
 set(FPRIME_PLATFORM vxworks-llvm)
 
+# These three environment variables should be defined
+# in the project's environment's .ini file
 set(WIND_BASE $ENV{WIND_BASE})
 set(VSB_HOME $ENV{VSB_HOME})
+set(WINDRIVER_COMPILER_ROOT $ENV{WINDRIVER_COMPILER_ROOT})
 
 include_directories(SYSTEM "${VSB_HOME}/krnl/h/public")
 include_directories(SYSTEM "${VSB_HOME}/krnl/h/system")
 include_directories("${VSB_HOME}/share/h")
 
-add_definitions(-DBUILD_RAD750)
-
-set(WINDRIVER_COMPILER_ROOT "${WIND_BASE}/../compilers/llvm-17.0.6.1/LINUX64")
 # Check toolchain directory exists
 IF(NOT EXISTS "${WINDRIVER_COMPILER_ROOT}")
     message(FATAL_ERROR " Windriver compilers not found at ${WINDRIVER_COMPILER_ROOT}.")
