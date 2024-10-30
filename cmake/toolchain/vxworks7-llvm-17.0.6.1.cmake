@@ -68,7 +68,6 @@ set(COMPILER_COMMON_FLAGS
     -two-entry-phi-node-folding-threshold=2 \
     -fno-unwind-tables \
     -fno-asynchronous-unwind-tables \
-    -fdebug-default-version=4 \
     -fdollars-in-identifiers \
     -Wall \
     -Wconversion \
