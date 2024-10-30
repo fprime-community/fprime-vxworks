@@ -86,6 +86,7 @@ set(COMPILER_COMMON_FLAGS
     -D_WRS_VX_SMP \
     -D_WRS_CONFIG_SMP \
     -pedantic \
+    -O2 \
     "
 )
     
