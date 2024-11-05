@@ -2,7 +2,7 @@
 set(CMAKE_SYSTEM_NAME VxWorks)
 set(CMAKE_SYSTEM_VERSION 7.0)
 set(CMAKE_SYSTEM_PROCESSOR x86)
-set(FPRIME_PLATFORM vxworks-llvm)
+set(FPRIME_PLATFORM VxWorks)
 
 # These environment variables should be defined
 # in the project's environment's .ini file
