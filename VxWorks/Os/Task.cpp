@@ -36,8 +36,9 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
 
     // Get taskName into a non-const variable because that is what
     // VxWorks' taskCreate wants.
-    char taskName[arguments.m_name.getCapacity()];
-    memcpy(taskName, arguments.m_name.toChar(), arguments.m_name.getCapacity());
+    char taskName[Os::TaskString::BUFFER_SIZE(Os::TaskString::STRING_SIZE)];
+    auto minimumStringSize = FW_MIN(sizeof(taskName), arguments.m_name.getCapacity());
+    memcpy(taskName, arguments.m_name.toChar(), minimumStringSize);
 
     // convert priority from Posix range to VxWorks range
     PlatformIntType vxPriority = static_cast<PlatformIntType>(255 - arguments.m_priority);
