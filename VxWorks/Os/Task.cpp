@@ -52,7 +52,7 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
     }
 
 #ifdef _WRS_CONFIG_SMP
-    if (arguments.m_cpuAffinity != -1) {
+    if (arguments.m_cpuAffinity != Os::Task::TASK_DEFAULT) {
         cpuset_t aff;
 
         CPUSET_ZERO(aff);
