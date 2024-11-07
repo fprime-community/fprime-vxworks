@@ -3,7 +3,7 @@
 #
 # This is a generic toolchain for use with VxWorks. It leverages the CMake toolchain
 # provided from the VxWorks Source Build. It requires the user to set a series of
-# environment variables. FPRIME_WIND_SOURCE_BUILD is always set by the user. The
+# environment variables. WIND_CC_SYSROOT is always set by the user. The
 # others may be set by the user or sourced using `wrenv.linux`.
 #
 # WIND_CC_SYSROOT: path to the VxWorks source build for the project
@@ -26,6 +26,7 @@ foreach (REQUIRED_ENVIRONMENT IN ITEMS WIND_HOME WIND_BASE)
     endif()
 endforeach()
 
+message(STATUS "[vxworks] VxWorks WIND_CC_SYSROOT: $ENV{WIND_CC_SYSROOT}")
 message(STATUS "[vxworks] VxWorks WIND_HOME: $ENV{WIND_HOME}")
 message(STATUS "[vxworks] VxWorks WIND_BASE: $ENV{WIND_BASE}")
 
