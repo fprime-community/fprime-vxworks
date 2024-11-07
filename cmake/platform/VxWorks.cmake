@@ -4,6 +4,7 @@
 # VxWorks platform file for standard vxworks targets.
 ####
 
+add_compile_definitions(TGT_OS_TYPE_VXWORKS)
 choose_fprime_implementation(Os/Console Os/Console/VxWorks)
 choose_fprime_implementation(Os/Cpu Os/Cpu/Stub)
 choose_fprime_implementation(Os/File Os/File/Stub)
