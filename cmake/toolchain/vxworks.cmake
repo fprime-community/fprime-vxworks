@@ -12,11 +12,17 @@
 ####
 
 # Set up the VSB path
-if (NOT DEFINED ENV{WIND_CC_SYSROOT})
-    message(FATAL_ERROR "User must define environment variable WIND_CC_SYSROOT")
-# Check VxWorks toolchain.cmake available in VSB
+if (EXISTS ENV{WIND_CC_SYSROOT_OVERRIDE})
+    set(WIND_CC_SYSROOT      ENV{WIND_CC_SYSROOT_OVERRIDE})
+    set(ENV{WIND_CC_SYSROOT} $ENV{WIND_CC_SYSROOT_OVERRIDE})
+else()
+    set(WIND_CC_SYSROOT $ENV{WIND_CC_SYSROOT})
+endif()
+
+if (NOT DEFINED WIND_CC_SYSROOT)
+    message(FATAL_ERROR "User must define environment or CMake variable WIND_CC_SYSROOT")
 elseif (NOT EXISTS "$ENV{WIND_CC_SYSROOT}/mk/toolchain.cmake")
-	message(FATAL_ERROR "VxWorks Source Build Malformed. Cannot find $ENV{WIND_CC_SYSROOT}/mk/toolchain.cmake")
+    message(FATAL_ERROR "VxWorks Source Build Malformed")
 endif()
 
 # Check must-have environment variables
