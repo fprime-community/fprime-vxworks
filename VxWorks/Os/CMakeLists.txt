@@ -16,40 +16,7 @@ set(HEADER_FILES
 )
 register_fprime_module(Os_VxWorks_Shared)
 
-##########################################
-####    VxWorks/Os/Task Section    ####
-##########################################
-list(APPEND SOURCE_FILES
-    "Task.cpp"
-)
-
-register_fprime_module(Os_Task_VxWorks)
-register_fprime_implementation(Os/Task Os_Task_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultTask.cpp")
-
-##########################################
-####    VxWorks/Os/Console Section    ####
-##########################################
-list(APPEND SOURCE_FILES
-    "Console.cpp"
-)
-
-register_fprime_module(Os_Console_VxWorks)
-register_fprime_implementation(Os/Console Os_Console_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp")
-
-##########################################
-####    VxWorks/Os/Mutex Section    ####
-##########################################
-list(APPEND SOURCE_FILES
-    "Mutex.cpp"
-)
-
-register_fprime_module(Os_Mutex_VxWorks)
-register_fprime_implementation(Os/Mutex Os_Mutex_VxWorks "${CMAKE_CURRENT_LIST_DIR}/DefaultMutex.cpp")
-
-# Finish setup
-
-set(MOD_DEPS
-      Os_VxWorks_Shared
-      Fw/Time
-      Os
-)
+# Set up VxWorks implementation
+register_os_implementation("Console" VxWorks)
+register_os_implementation("Task" VxWorks Os_VxWorks_Shared Fw_Time)
+register_os_implementation("Mutex;ConditionVariable" VxWorks Os_VxWorks_Shared)
