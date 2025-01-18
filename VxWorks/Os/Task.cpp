@@ -40,9 +40,10 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
     auto minimumStringSize = FW_MIN(sizeof(taskName), arguments.m_name.getCapacity());
     memcpy(taskName, arguments.m_name.toChar(), minimumStringSize);
 
-    this->m_handle.m_task_descriptor = taskCreate(
-        taskName, arguments.m_priority, VX_FP_TASK, arguments.m_stackSize, reinterpret_cast<FUNCPTR>(myRoutineWrapper),
-        reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine_argument), 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    this->m_handle.m_task_descriptor =
+        taskCreate(taskName, arguments.m_priority, VX_FP_TASK, arguments.m_stackSize,
+                   reinterpret_cast<FUNCPTR>(myRoutineWrapper), reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine),
+                   reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine_argument), 0, 0, 0, 0, 0, 0, 0, 0);
 
     if (this->m_handle.m_task_descriptor == TASK_ID_NULL) {
         return Os::Task::Status::UNKNOWN_ERROR;
