@@ -16,7 +16,8 @@ VxWorksMutex::VxWorksMutex() : Os::MutexInterface(), m_handle() {
 }
 
 VxWorksMutex::~VxWorksMutex() {
-    (void)semDelete(this->m_handle.m_mutex_descriptor);
+    STATUS status = semDelete(this->m_handle.m_mutex_descriptor);
+    FW_ASSERT(status == VXWORKS_OK, static_cast<FwAssertArgType>(status));
 }
 
 VxWorksMutex::Status VxWorksMutex::take() {
