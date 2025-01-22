@@ -22,12 +22,14 @@ VxWorksMutex::~VxWorksMutex() {
 
 VxWorksMutex::Status VxWorksMutex::take() {
     STATUS status = semTake(this->m_handle.m_mutex_descriptor, WAIT_FOREVER);
-    return Os::VxWorks::vxworks_status_to_mutex_status(status);
+    PlatformIntType statusType = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
+    return Os::VxWorks::vxworks_status_to_mutex_status(statusType);
 }
 
 VxWorksMutex::Status VxWorksMutex::release() {
     STATUS status = semGive(this->m_handle.m_mutex_descriptor);
-    return Os::VxWorks::vxworks_status_to_mutex_status(status);
+    PlatformIntType statusType = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
+    return Os::VxWorks::vxworks_status_to_mutex_status(statusType);
 }
 
 MutexHandle* VxWorksMutex::getHandle() {
