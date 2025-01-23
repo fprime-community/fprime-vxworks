@@ -5,6 +5,7 @@
 #include "VxWorks/Os/ConditionVariable.hpp"
 #include "Fw/Types/Assert.hpp"
 #include "VxWorks/Os/Mutex.hpp"
+#include "VxWorks/Os/error.hpp"
 
 namespace Os {
 namespace VxWorks {
@@ -19,7 +20,7 @@ VxWorksConditionVariable::~VxWorksConditionVariable() {
     (void)condVarDelete(this->m_handle.m_condition);
 }
 
-ConditionVariableInterface::Status VxWorksConditionVariable::pend(Os::Mutex& mutex) {
+VxWorksConditionVariable::Status VxWorksConditionVariable::pend(Os::Mutex& mutex) {
     VxWorksMutexHandle* mutex_handle = reinterpret_cast<VxWorksMutexHandle*>(mutex.getHandle());
     FW_ASSERT(mutex_handle != nullptr);
 
@@ -31,21 +32,12 @@ ConditionVariableInterface::Status VxWorksConditionVariable::pend(Os::Mutex& mut
     // condVarWait is expected to release and retake mutex. Hence why we decrement and increment m_sem_take_counter.
     auto status = condVarWait(this->m_handle.m_condition, mutex_handle->m_mutex_descriptor, WAIT_FOREVER);
 
-    ConditionVariableInterface::Status statusReturn = ConditionVariableInterface::Status::OP_OK;
     // Keep track of the number sem takes in order to detect re-entry semTakes
     mutex_handle->m_sem_take_counter++;
 
-    if (status == VXWORKS_OK) {
-        statusReturn = ConditionVariableInterface::Status::OP_OK;
-    } else if (errno == S_semLib_INVALID_OPERATION) {
-        statusReturn = ConditionVariableInterface::Status::ERROR_MUTEX_NOT_HELD;
-    } else if (errno == S_condVarLib_INVALID_OPERATION) {
-        statusReturn = ConditionVariableInterface::Status::ERROR_DIFFERENT_MUTEX;
-    } else {
-        statusReturn = ConditionVariableInterface::Status::ERROR_OTHER;
-    }
+    PlatformIntType statusReturn = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
 
-    return statusReturn;
+    return Os::VxWorks::vxworks_status_to_conditional_status(statusReturn);
 }
 void VxWorksConditionVariable::notify() {
     auto status = condVarSignal(this->m_handle.m_condition);

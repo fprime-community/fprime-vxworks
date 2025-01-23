@@ -3,7 +3,7 @@
 // \brief implementation for VxWorks errno conversion
 // ======================================================================
 #include "VxWorks/Os/error.hpp"
-#include <cerrno>
+#include <condVarLib.h>  // Needed for condition-var's errno
 
 namespace Os {
 namespace VxWorks {
@@ -29,6 +29,25 @@ Mutex::Status vxworks_status_to_mutex_status(PlatformIntType vxworks_status) {
             break;
         default:
             status = Mutex::Status::ERROR_OTHER;
+            break;
+    }
+    return status;
+}
+
+ConditionVariable::Status vxworks_status_to_conditional_status(PlatformIntType vxworks_status) {
+    ConditionVariable::Status status = ConditionVariable::Status::ERROR_OTHER;
+    switch (vxworks_status) {
+        case VXWORKS_OK:
+            status = ConditionVariable::Status::OP_OK;
+            break;
+        case S_semLib_INVALID_OPERATION:
+            status = ConditionVariable::Status::ERROR_MUTEX_NOT_HELD;
+            break;
+        case S_condVarLib_INVALID_OPERATION:
+            status = ConditionVariable::Status::ERROR_DIFFERENT_MUTEX;
+            break;
+        default:
+            status = ConditionVariable::Status::ERROR_OTHER;
             break;
     }
     return status;

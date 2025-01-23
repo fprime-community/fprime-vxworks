@@ -32,7 +32,7 @@ class VxWorksConditionVariable : public ConditionVariableInterface {
     ConditionVariableInterface& operator=(const ConditionVariableInterface& other) override = delete;
 
     //! \brief wait releasing mutex
-    ConditionVariableInterface::Status pend(Os::Mutex& mutex) override;
+    VxWorksConditionVariable::Status pend(Os::Mutex& mutex) override;
 
     //! \brief notify a single waiter
     void notify() override;
