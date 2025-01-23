@@ -13,6 +13,8 @@ namespace Mutex {
 
 struct VxWorksMutexHandle : public MutexHandle {
     SEM_ID m_mutex_descriptor = SEM_ID_NULL;
+    // Counter helps keep track of re-entry semTakes, which we want to avoid.
+    U32 m_sem_take_counter = 0;
 };
 
 //! \brief VxWorks implementation of Os::Mutex
