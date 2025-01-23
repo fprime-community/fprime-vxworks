@@ -27,12 +27,6 @@ Mutex::Status vxworks_status_to_mutex_status(PlatformIntType vxworks_status) {
         case VXWORKS_OK:
             status = Mutex::Status::OP_OK;
             break;
-        case EDEADLK:
-            status = Mutex::Status::ERROR_DEADLOCK;
-            break;
-        case EPERM:
-            status = Mutex::Status::ERROR_OTHER;
-            break;
         default:
             status = Mutex::Status::ERROR_OTHER;
             break;
