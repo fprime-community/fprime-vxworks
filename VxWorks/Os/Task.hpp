@@ -65,6 +65,8 @@ class VxWorksTask : public TaskInterface {
     //
     //! It is illegal for arguments.m_routine to be null.
     //!
+    //! Assumption: Priority number ranges from 0 (highest) to 255 (lowest).
+    //!
     //! \param arguments: arguments supplied to the task start call
     //! \return status of the task start
     Status start(const Arguments& arguments) override;
