@@ -30,5 +30,13 @@ message(STATUS "[vxworks] VxWorks WIND_CC_SYSROOT: $ENV{WIND_CC_SYSROOT}")
 message(STATUS "[vxworks] VxWorks WIND_HOME: $ENV{WIND_HOME}")
 message(STATUS "[vxworks] VxWorks WIND_BASE: $ENV{WIND_BASE}")
 
+# To compile with debug symbols run:
+# `fprime-util generate -DCMAKE_BUILD_TYPE=DEBUG && fprime-util build`
+string(TOUPPER "${CMAKE_BUILD_TYPE}" cmake_build_type_upper)
+if (cmake_build_type_upper STREQUAL "DEBUG")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    add_compile_options(-ggdb)
+endif()
+
 # Include the supplied CMake toolchain
 include("$ENV{WIND_CC_SYSROOT}/mk/toolchain.cmake")
