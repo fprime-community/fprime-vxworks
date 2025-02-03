@@ -30,5 +30,9 @@ message(STATUS "[vxworks] VxWorks WIND_CC_SYSROOT: $ENV{WIND_CC_SYSROOT}")
 message(STATUS "[vxworks] VxWorks WIND_HOME: $ENV{WIND_HOME}")
 message(STATUS "[vxworks] VxWorks WIND_BASE: $ENV{WIND_BASE}")
 
+# Custom items
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_compile_options(-ggdb)
+
 # Include the supplied CMake toolchain
 include("$ENV{WIND_CC_SYSROOT}/mk/toolchain.cmake")
