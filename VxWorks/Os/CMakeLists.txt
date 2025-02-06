@@ -18,5 +18,6 @@ register_fprime_module(Os_VxWorks_Shared)
 
 # Set up VxWorks implementation
 register_os_implementation("Console" VxWorks)
-register_os_implementation("Task" VxWorks Os_VxWorks_Shared Fw_Time)
 register_os_implementation("Mutex;ConditionVariable" VxWorks Os_VxWorks_Shared)
+register_os_implementation("Queue" VxWorks)
+register_os_implementation("Task" VxWorks Os_VxWorks_Shared Fw_Time)
