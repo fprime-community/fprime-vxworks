@@ -21,7 +21,7 @@ endfunction()
 ####
 function(vxvalidate_add_deployment_target MODULE)
     # Check if the kernel image exists
-    if (NOT EXISTS "${VXWORKS_KERNEL_IMAGE_PATH}")
+    if (NOT EXISTS "$ENV{VXWORKS_KERNEL_IMAGE_PATH}")
         message(WARNING "VxWorks kernel image not specified, or does not exist. Skipping undefined symbols check")
         return()
     endif()
