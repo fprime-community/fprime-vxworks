@@ -5,6 +5,7 @@
 #ifndef OS_VXWORKS_QUEUE_HPP
 #define OS_VXWORKS_QUEUE_HPP
 #include <msgQLib.h>
+#include "Os/Mutex.hpp"
 #include "Os/Queue.hpp"
 
 namespace Os {
@@ -13,6 +14,8 @@ namespace Queue {
 
 struct VxWorksQueueHandle : public QueueHandle {
     MSG_Q_ID m_queue = MSG_Q_ID_NULL;
+    Os::Mutex m_data_lock;      //!< Lock to proect updates on m_highMark
+    FwSizeType m_highMark = 0;  //!< Message count high water mark
 };
 
 //! \brief VxWorks queue implementation with injectable statuses

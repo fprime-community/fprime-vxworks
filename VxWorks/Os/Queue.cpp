@@ -14,7 +14,6 @@ VxWorksQueue::~VxWorksQueue() {
 }
 
 QueueInterface::Status VxWorksQueue::create(const Fw::StringBase& name, FwSizeType depth, FwSizeType messageSize) {
-    return QueueInterface::Status::UNKNOWN_ERROR;
     this->m_handle.m_queue = msgQCreate(depth, messageSize, MSG_Q_PRIORITY);
     if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
         return QueueInterface::Status::UNINITIALIZED;
@@ -50,6 +49,11 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
         }
     }
 
+    // Protect critical data m_highMark
+    {
+        Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
+        this->m_handle.m_highMark = FW_MAX(this->m_handle.m_highMark, this->getMessagesAvailable());
+    }
     return QueueInterface::Status::OP_OK;
 }
 
@@ -58,15 +62,38 @@ QueueInterface::Status VxWorksQueue::receive(U8* destination,
                                              QueueInterface::BlockingType blockType,
                                              FwSizeType& actualSize,
                                              FwQueuePriorityType& priority) {
-    return QueueInterface::Status::UNINITIALIZED;
+    FW_ASSERT(destination != nullptr);
+    if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
+        return QueueInterface::Status::UNINITIALIZED;
+    }
+
+    // Casting destination to match API
+    actualSize = msgQReceive(this->m_handle.m_queue, reinterpret_cast<char*>(destination), capacity,
+                             (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER);
+
+    if (actualSize == VXWORKS_ERROR) {
+        actualSize = 0;
+        switch (errno) {
+            case S_msgQLib_INVALID_MSG_LENGTH:
+                return QueueInterface::Status::SIZE_MISMATCH;
+            case S_objLib_OBJ_UNAVAILABLE:
+                return QueueInterface::Status::EMPTY;
+            default:
+                return QueueInterface::Status::UNKNOWN_ERROR;
+        }
+    }
+    return QueueInterface::Status::OP_OK;
 }
 
 FwSizeType VxWorksQueue::getMessagesAvailable() const {
-    return 0;
+    FW_ASSERT(this->m_handle.m_queue != MSG_Q_ID_NULL);
+    return msgQNumMsgs(this->m_handle.m_queue);
 }
 
 FwSizeType VxWorksQueue::getMessageHighWaterMark() const {
-    return 0;
+    // Safe to cast away const in this context because scope lock will restore unlocked state on return
+    Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
+    return this->m_handle.m_highMark;
 }
 
 QueueHandle* VxWorksQueue::getHandle() {
