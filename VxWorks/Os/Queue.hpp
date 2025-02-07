@@ -4,13 +4,16 @@
 // ======================================================================
 #ifndef OS_VXWORKS_QUEUE_HPP
 #define OS_VXWORKS_QUEUE_HPP
+#include <msgQLib.h>
 #include "Os/Queue.hpp"
 
 namespace Os {
 namespace VxWorks {
 namespace Queue {
 
-struct VxWorksQueueHandle : public QueueHandle {};
+struct VxWorksQueueHandle : public QueueHandle {
+    MSG_Q_ID m_queue = MSG_Q_ID_NULL;
+};
 
 //! \brief VxWorks queue implementation with injectable statuses
 class VxWorksQueue : public QueueInterface {
@@ -18,8 +21,8 @@ class VxWorksQueue : public QueueInterface {
     //! \brief default queue interface constructor
     VxWorksQueue() = default;
 
-    //! \brief default queue destructor
-    virtual ~VxWorksQueue() = default;
+    //! \brief queue destructor
+    ~VxWorksQueue() override;
 
     //! \brief copy constructor is forbidden
     VxWorksQueue(const QueueInterface& other) = delete;
