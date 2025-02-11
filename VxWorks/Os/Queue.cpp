@@ -1,96 +1,105 @@
-#include <Os/Queue.hpp>
-
-#include <vxWorks.h>
-#include <msgQLib.h>
-
-#include <stdio.h>
-#include <string.h>
-#include <logLib.h>
+// ======================================================================
+// \title VxWorks/Os/Queue.cpp
+// \brief VxWorks implementation for Os::Queue
+// ======================================================================
+#include "Queue.hpp"
+#include <Fw/Types/Assert.hpp>
 
 namespace Os {
-    
-    Queue::Queue(): m_handle(0) {
-        
-    }
+namespace VxWorks {
+namespace Queue {
 
-    Queue::QueueStatus Queue::createInternal(const Fw::StringBase &name, NATIVE_INT_TYPE depth, NATIVE_INT_TYPE msgSize) {
-
-        this->m_name = "QV_";
-        this->m_name += name;
-
-        MSG_Q_ID handle = msgQCreate(depth,msgSize,MSG_Q_PRIORITY);
-        this->m_handle = handle == NULL?0:(POINTER_CAST)handle;
-        if (NULL == handle) {
-            return QUEUE_UNINITIALIZED;
-        }
-        Queue::s_numQueues++;
-        return QUEUE_OK;
-    }
-    
-    Queue::~Queue() {
-        (void)msgQDelete((MSG_Q_ID) this->m_handle);
-    }
-
-    Queue::QueueStatus Queue::send(const U8* buffer, NATIVE_INT_TYPE size, NATIVE_INT_TYPE priority, QueueBlocking block) {
-
-        if (0 == this->m_handle) {
-            return QUEUE_UNINITIALIZED;
-        }
-        
-        if (NULL == buffer) {
-            return QUEUE_EMPTY_BUFFER;
-        }
-        
-        NATIVE_INT_TYPE vxPrio = MSG_PRI_NORMAL;
-        if (priority > 0) {
-            vxPrio = MSG_PRI_URGENT;
-        }
-        
-        STATUS stat = msgQSend((MSG_Q_ID) this->m_handle, (char*) buffer, size, (QUEUE_NONBLOCKING == block)?NO_WAIT:WAIT_FOREVER, vxPrio);
-        
-        if (ERROR == stat) {
-            switch (errno) {
-                case S_msgQLib_INVALID_MSG_LENGTH:
-                    return QUEUE_SIZE_MISMATCH;
-                case S_objLib_OBJ_UNAVAILABLE:
-                case S_msgQLib_NON_ZERO_TIMEOUT_AT_INT_LEVEL:
-                    return QUEUE_FULL;
-                default:
-                    logMsg("Queue send error %s! %d\n",(int)strerror(errno),(int)this->m_handle,0,0,0,0);
-                    return QUEUE_UNKNOWN_ERROR;
-            }
-        } else {
-            return QUEUE_OK;
-        }
-    }
-
-    Queue::QueueStatus Queue::receive(U8* buffer, NATIVE_INT_TYPE capacity, NATIVE_INT_TYPE &actualSize, NATIVE_INT_TYPE &priority, QueueBlocking block) {
-        
-        if (0 == this->m_handle) {
-            return QUEUE_UNINITIALIZED;
-        }
-
-        actualSize = msgQReceive((MSG_Q_ID) this->m_handle, (char*)buffer, capacity, (QUEUE_NONBLOCKING == block)?NO_WAIT:WAIT_FOREVER);
-        
-        if (ERROR == actualSize) {
-            actualSize = 0;
-            switch (errno) {
-                case S_msgQLib_INVALID_MSG_LENGTH:
-                    return QUEUE_SIZE_MISMATCH;
-                case S_objLib_OBJ_UNAVAILABLE:
-                    return QUEUE_NO_MORE_MSGS;
-                default:
-                    logMsg("Queue receive error %s! %d %d\n",(int)strerror(errno),(int)this->m_handle,(int)block,0,0,0);
-                    return QUEUE_UNKNOWN_ERROR;
-            }
-        } else {
-            return QUEUE_OK;
-        }
-    }
-
-    NATIVE_INT_TYPE Queue::getNumMsgs(void) const {
-        return msgQNumMsgs((MSG_Q_ID) this->m_handle);
-    }
-
+VxWorksQueue::~VxWorksQueue() {
+    (void)msgQDelete(this->m_handle.m_queue);
 }
 
+QueueInterface::Status VxWorksQueue::create(const Fw::StringBase& name, FwSizeType depth, FwSizeType messageSize) {
+    this->m_handle.m_queue = msgQCreate(depth, messageSize, MSG_Q_PRIORITY);
+    if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
+        return QueueInterface::Status::UNINITIALIZED;
+    }
+    return QueueInterface::Status::OP_OK;
+}
+
+QueueInterface::Status VxWorksQueue::send(const U8* buffer,
+                                          FwSizeType size,
+                                          FwQueuePriorityType priority,
+                                          QueueInterface::BlockingType blockType) {
+    FW_ASSERT(buffer != nullptr);
+    if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
+        return QueueInterface::Status::UNINITIALIZED;
+    }
+
+    PlatformIntType vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
+
+    // Doing a c-style cast here because msgQSend requires a char* and this is more
+    // efficient than copying from a const U8 buffer to a non-const char* buffer.
+    STATUS stat = msgQSend(this->m_handle.m_queue, (char*)buffer, size,
+                           (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER, vxPrio);
+
+    if (stat == VXWORKS_ERROR) {
+        switch (errno) {
+            case S_msgQLib_INVALID_MSG_LENGTH:
+                return QueueInterface::Status::SIZE_MISMATCH;
+            case S_objLib_OBJ_UNAVAILABLE:
+            case S_msgQLib_NON_ZERO_TIMEOUT_AT_INT_LEVEL:
+                return QueueInterface::Status::FULL;
+            default:
+                return QueueInterface::Status::UNKNOWN_ERROR;
+        }
+    }
+
+    // Protect critical data m_highMark
+    {
+        Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
+        this->m_handle.m_highMark = FW_MAX(this->m_handle.m_highMark, this->getMessagesAvailable());
+    }
+    return QueueInterface::Status::OP_OK;
+}
+
+QueueInterface::Status VxWorksQueue::receive(U8* destination,
+                                             FwSizeType capacity,
+                                             QueueInterface::BlockingType blockType,
+                                             FwSizeType& actualSize,
+                                             FwQueuePriorityType& priority) {
+    FW_ASSERT(destination != nullptr);
+    if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
+        return QueueInterface::Status::UNINITIALIZED;
+    }
+
+    // Casting destination to match API
+    actualSize = msgQReceive(this->m_handle.m_queue, reinterpret_cast<char*>(destination), capacity,
+                             (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER);
+
+    if (actualSize == VXWORKS_ERROR) {
+        actualSize = 0;
+        switch (errno) {
+            case S_msgQLib_INVALID_MSG_LENGTH:
+                return QueueInterface::Status::SIZE_MISMATCH;
+            case S_objLib_OBJ_UNAVAILABLE:
+                return QueueInterface::Status::EMPTY;
+            default:
+                return QueueInterface::Status::UNKNOWN_ERROR;
+        }
+    }
+    return QueueInterface::Status::OP_OK;
+}
+
+FwSizeType VxWorksQueue::getMessagesAvailable() const {
+    FW_ASSERT(this->m_handle.m_queue != MSG_Q_ID_NULL);
+    return msgQNumMsgs(this->m_handle.m_queue);
+}
+
+FwSizeType VxWorksQueue::getMessageHighWaterMark() const {
+    // Safe to cast away const in this context because scope lock will restore unlocked state on return
+    Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
+    return this->m_handle.m_highMark;
+}
+
+QueueHandle* VxWorksQueue::getHandle() {
+    return &this->m_handle;
+}
+
+}  // namespace Queue
+}  // namespace VxWorks
+}  // namespace Os
