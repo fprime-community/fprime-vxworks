@@ -11,7 +11,7 @@ choose_fprime_implementation(Os/File Os/File/Posix)
 choose_fprime_implementation(Os/Memory Os/Memory/Stub)
 choose_fprime_implementation(Os/Mutex Os/Mutex/Posix)
 choose_fprime_implementation(Os/Queue Os/Generic/PriorityQueue)
-choose_fprime_implementation(Os/RawTime Os/RawTime/Stub)
+choose_fprime_implementation(Os/RawTime Os/RawTime/Posix)
 choose_fprime_implementation(Os/Task Os/Task/Posix)
 
 add_compile_definitions(TGT_OS_TYPE_VXWORKS)
