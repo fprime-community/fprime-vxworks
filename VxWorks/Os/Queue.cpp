@@ -49,11 +49,13 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
         }
     }
 
+#ifdef ENABLE_HIGH_WATERMARK
     // Protect critical data m_highMark
     {
         Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
         this->m_handle.m_highMark = FW_MAX(this->m_handle.m_highMark, this->getMessagesAvailable());
     }
+#endif
     return QueueInterface::Status::OP_OK;
 }
 
@@ -91,9 +93,13 @@ FwSizeType VxWorksQueue::getMessagesAvailable() const {
 }
 
 FwSizeType VxWorksQueue::getMessageHighWaterMark() const {
+#ifdef ENABLE_HIGH_WATERMARK
     // Safe to cast away const in this context because scope lock will restore unlocked state on return
     Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
     return this->m_handle.m_highMark;
+#else
+    return 0;
+#endif
 }
 
 QueueHandle* VxWorksQueue::getHandle() {
