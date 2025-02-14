@@ -83,7 +83,7 @@ class VxWorksQueue : public QueueInterface {
 
     //! \brief get maximum messages stored at any given time
     //!
-    //! \note this function is not implement
+    //! \note this function is not implemented
     //!
     //! \return std::numeric_limits<FwSizeType>::max();
     FwSizeType getMessageHighWaterMark() const override;
