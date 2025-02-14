@@ -3,6 +3,7 @@
 // \brief VxWorks implementation for Os::Queue
 // ======================================================================
 #include "Queue.hpp"
+#include <limits.h>
 #include <Fw/Types/Assert.hpp>
 
 namespace Os {
@@ -48,12 +49,6 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
                 return QueueInterface::Status::UNKNOWN_ERROR;
         }
     }
-
-    // Protect critical data m_highMark
-    {
-        Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
-        this->m_handle.m_highMark = FW_MAX(this->m_handle.m_highMark, this->getMessagesAvailable());
-    }
     return QueueInterface::Status::OP_OK;
 }
 
@@ -91,9 +86,7 @@ FwSizeType VxWorksQueue::getMessagesAvailable() const {
 }
 
 FwSizeType VxWorksQueue::getMessageHighWaterMark() const {
-    // Safe to cast away const in this context because scope lock will restore unlocked state on return
-    Os::ScopeLock lock(const_cast<Mutex&>(this->m_handle.m_data_lock));
-    return this->m_handle.m_highMark;
+    return std::numeric_limits<FwSizeType>::max();
 }
 
 QueueHandle* VxWorksQueue::getHandle() {
