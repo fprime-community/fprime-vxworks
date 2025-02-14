@@ -14,8 +14,6 @@ namespace Queue {
 
 struct VxWorksQueueHandle : public QueueHandle {
     MSG_Q_ID m_queue = MSG_Q_ID_NULL;
-    Os::Mutex m_data_lock;      //!< Lock to protect m_highMark
-    FwSizeType m_highMark = 0;  //!< Message count high water mark
 };
 
 //! \brief VxWorks queue implementation with injectable statuses
