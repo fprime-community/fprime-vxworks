@@ -17,6 +17,8 @@ struct VxWorksQueueHandle : public QueueHandle {
 };
 
 //! \brief VxWorks queue implementation with injectable statuses
+//!
+//! \note This queue implementation does not implement high watermark.
 class VxWorksQueue : public QueueInterface {
   public:
     //! \brief default queue interface constructor
@@ -81,9 +83,9 @@ class VxWorksQueue : public QueueInterface {
 
     //! \brief get maximum messages stored at any given time
     //!
-    //! Returns the maximum number of messages in this queue at any given time. This is the high-water mark for this
-    //! queue.
-    //! \return queue message high-water mark
+    //! \note this function is not implement
+    //!
+    //! \return std::numeric_limits<FwSizeType>::max();
     FwSizeType getMessageHighWaterMark() const override;
 
     QueueHandle* getHandle() override;
