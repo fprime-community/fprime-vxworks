@@ -14,11 +14,11 @@ namespace Queue {
 
 struct VxWorksQueueHandle : public QueueHandle {
     MSG_Q_ID m_queue = MSG_Q_ID_NULL;
-    Os::Mutex m_data_lock;      //!< Lock to protect m_highMark
-    FwSizeType m_highMark = 0;  //!< Message count high water mark
 };
 
 //! \brief VxWorks queue implementation with injectable statuses
+//!
+//! \note This queue implementation does not implement high watermark.
 class VxWorksQueue : public QueueInterface {
   public:
     //! \brief default queue interface constructor
@@ -83,9 +83,9 @@ class VxWorksQueue : public QueueInterface {
 
     //! \brief get maximum messages stored at any given time
     //!
-    //! Returns the maximum number of messages in this queue at any given time. This is the high-water mark for this
-    //! queue.
-    //! \return queue message high-water mark
+    //! \note this function is not implemented
+    //!
+    //! \return std::numeric_limits<FwSizeType>::max();
     FwSizeType getMessageHighWaterMark() const override;
 
     QueueHandle* getHandle() override;
