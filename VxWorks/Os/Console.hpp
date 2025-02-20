@@ -62,10 +62,6 @@ class VxWorksConsole : public ConsoleInterface {
     //!
     ConsoleHandle* getHandle() override;
 
-    // ------------------------------------
-    // Helper functions
-    // ------------------------------------
-
   private:
     //! File handle for VxWorksFile
     VxWorksConsoleHandle m_handle;
