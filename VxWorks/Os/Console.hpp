@@ -14,8 +14,8 @@ namespace Console {
 //! ConsoleHandle class definition for VxWorks implementations.
 //!
 struct VxWorksConsoleHandle : public ConsoleHandle {
-    char circularBuffer[CONSOLE_CAPACITY][CONSOLE_MESSAGE_SIZE];  // Circular buffer to store messages
-    FwIndexType m_tail_index = 0;                                 // Index pointing to the tail of the circular buffer
+    char circularBuffer[MAX_CONSOLE_CAPACITY][MAX_CONSOLE_MESSAGE_BYTE_SIZE];  // Circular buffer to store messages
+    FwIndexType m_tail_index = 0;  // Index pointing to the tail of the circular buffer
 };
 
 //! \brief VxWorks implementation of Os::ConsoleInterface

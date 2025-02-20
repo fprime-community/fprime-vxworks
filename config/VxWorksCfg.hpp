@@ -11,8 +11,8 @@
 namespace Os {
 namespace VxWorks {
 
-static constexpr PlatformSizeType CONSOLE_CAPACITY = 10;       // Max number of messages that can be stored
-static constexpr PlatformSizeType CONSOLE_MESSAGE_SIZE = 256;  // Max message size
+static constexpr PlatformSizeType MAX_CONSOLE_CAPACITY = 10;       // Max number of messages that can be stored
+static constexpr PlatformSizeType MAX_CONSOLE_MESSAGE_BYTE_SIZE = 256;  // Max message size
 
 }  // namespace VxWorks
 }  // namespace Os
