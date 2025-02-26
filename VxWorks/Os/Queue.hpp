@@ -21,6 +21,7 @@ struct VxWorksQueueHandle : public QueueHandle {
 //! \note This queue implementation does not implement high watermark.
 //! \note This queue implementation is not a true priority queue. Any message with a priority of 1 will be
 //! added to the head of the list and any message with a priority of 0 will be added to the tail of the list.
+//! \note Messages with a priority of 1 is only supported in ISR context.
 class VxWorksQueue : public QueueInterface {
   public:
     //! \brief default queue interface constructor
