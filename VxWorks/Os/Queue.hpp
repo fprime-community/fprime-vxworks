@@ -19,6 +19,8 @@ struct VxWorksQueueHandle : public QueueHandle {
 //! \brief VxWorks queue implementation with injectable statuses
 //!
 //! \note This queue implementation does not implement high watermark.
+//! \note This queue implementation is not a true priority queue. Any message with a priority greater than 0 will be
+//! added to the head of the list regardless of the priority of the message at the head of the queue.
 class VxWorksQueue : public QueueInterface {
   public:
     //! \brief default queue interface constructor
@@ -53,7 +55,8 @@ class VxWorksQueue : public QueueInterface {
     //!
     //! \param buffer: message data
     //! \param size: size of message data
-    //! \param priority: priority of the message
+    //! \param priority: priority of the message. Any message with priority greater than 0 will be added to the head of
+    //! the queue.
     //! \param blockType: BLOCKING to block for space or NONBLOCKING to return error when queue is full
     //! \return: status of the send
     Status send(const U8* buffer, FwSizeType size, FwQueuePriorityType priority, BlockingType blockType) override;
@@ -62,13 +65,13 @@ class VxWorksQueue : public QueueInterface {
     //!
     //! Receive a message from the queue, providing the message destination, capacity, priority, and blocking type.
     //! When `blockType` is set to BLOCKING, this call will block on queue empty. Otherwise, this will return an
-    //! error status on queue empty. Actual size received and priority of message is set on success status.
+    //! error status on queue empty. Actual size received is set on success status. Priority of message is never set.
     //!
     //! \param destination: destination for message data
     //! \param capacity: maximum size of message data
     //! \param blockType: BLOCKING to wait for message or NONBLOCKING to return error when queue is empty
     //! \param actualSize: (output) actual size of message read
-    //! \param priority: (output) priority of message read
+    //! \param priority: (output) This function never set this argument
     //! \return: status of the send
     Status receive(U8* destination,
                    FwSizeType capacity,

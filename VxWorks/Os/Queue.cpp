@@ -33,9 +33,8 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
 
     PlatformIntType vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
 
-    // Doing a c-style cast here because msgQSend requires a char* and this is more
-    // efficient than copying from a const U8 buffer to a non-const char* buffer.
-    STATUS stat = msgQSend(this->m_handle.m_queue, (char*)buffer, size,
+    // Casting buffer to match API
+    STATUS stat = msgQSend(this->m_handle.m_queue, reinterpret_cast<char*>(const_cast<U8*>(buffer)), size,
                            (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER, vxPrio);
 
     if (stat == VXWORKS_ERROR) {
