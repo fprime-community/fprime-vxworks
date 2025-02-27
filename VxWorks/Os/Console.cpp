@@ -14,7 +14,7 @@ namespace Console {
 void VxWorksConsole::writeMessage(const CHAR* message, const FwSizeType size) {
     if (message != nullptr) {
         static_assert(std::is_unsigned<FwSizeType>::value, "FwSizeType is expected to be unsigned.");
-        static_assert(MAX_CONSOLE_CAPACITY > 0);
+        static_assert(MAX_CONSOLE_CAPACITY > 0, "Avoid dividing by zero.");
         // Rely on unsigned overflow to atomically roll over tail index
         const FwSizeType currentIndex = this->m_handle.m_tail_index.fetch_add(1) % MAX_CONSOLE_CAPACITY;
         FW_ASSERT(currentIndex < MAX_CONSOLE_CAPACITY, static_cast<FwAssertArgType>(currentIndex),
@@ -22,7 +22,7 @@ void VxWorksConsole::writeMessage(const CHAR* message, const FwSizeType size) {
         FwSizeType minSize = FW_MIN(size, MAX_CONSOLE_MESSAGE_BYTE_SIZE);
         (void)memcpy(this->m_handle.circularBuffer[currentIndex], message, minSize);
         this->m_handle.circularBuffer[currentIndex][minSize] = '\0';
-        logMsg(this->m_handle.circularBuffer[currentIndex], 0, 0, 0, 0, 0, 0);
+        (void)logMsg(this->m_handle.circularBuffer[currentIndex], 0, 0, 0, 0, 0, 0);
     }
 }
 
