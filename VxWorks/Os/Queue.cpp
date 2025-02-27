@@ -31,6 +31,17 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
         return QueueInterface::Status::UNINITIALIZED;
     }
 
+    // It is illegal to block while in interrupt context
+    FW_ASSERT(!(intContext() && blockType == QueueInterface::BlockingType::BLOCKING));
+
+    // VxWorks queues do not support true priority.  Priority of 1 is only allowed in cases where an ISR needs to
+    // be shuttled to the front of the line. This is because prioritized messages in VxWorks are in LIFO order and only
+    // support a boolean priority, which violates key expectations of Os::Queue. This is allowed in interrupt context as
+    // interrupts typically need to be processed with high priority.
+    if (!((intContext() && priority < 2) || priority == 0)) {
+        return QueueInterface::Status::NOT_SUPPORTED;
+    }
+
     PlatformIntType vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
 
     // Casting buffer to match API

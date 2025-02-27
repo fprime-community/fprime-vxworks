@@ -19,8 +19,9 @@ struct VxWorksQueueHandle : public QueueHandle {
 //! \brief VxWorks queue implementation with injectable statuses
 //!
 //! \note This queue implementation does not implement high watermark.
-//! \note This queue implementation is not a true priority queue. Any message with a priority greater than 0 will be
-//! added to the head of the list regardless of the priority of the message at the head of the queue.
+//! \note This queue implementation is not a true priority queue. Any message with a priority of 1 will be
+//! added to the head of the list and any message with a priority of 0 will be added to the tail of the list.
+//! \note Messages with a priority of 1 are only supported in ISR context.
 class VxWorksQueue : public QueueInterface {
   public:
     //! \brief default queue interface constructor
@@ -55,8 +56,8 @@ class VxWorksQueue : public QueueInterface {
     //!
     //! \param buffer: message data
     //! \param size: size of message data
-    //! \param priority: priority of the message. Any message with priority greater than 0 will be added to the head of
-    //! the queue.
+    //! \param priority: priority of the message. Only messages with a priority of 1 or 0 are allowed in ISR context,
+    //!                  otherwise only 0 priority is allowed.
     //! \param blockType: BLOCKING to block for space or NONBLOCKING to return error when queue is full
     //! \return: status of the send
     Status send(const U8* buffer, FwSizeType size, FwQueuePriorityType priority, BlockingType blockType) override;
