@@ -14,6 +14,7 @@ namespace Console {
 void VxWorksConsole::writeMessage(const CHAR* message, const FwSizeType size) {
     if (message != nullptr) {
         static_assert(std::is_unsigned<FwSizeType>::value, "FwSizeType is expected to be unsigned.");
+        static_assert(MAX_CONSOLE_CAPACITY > 0);
         // Rely on unsigned overflow to atomically roll over tail index
         const FwSizeType currentIndex = this->m_handle.m_tail_index.fetch_add(1) % MAX_CONSOLE_CAPACITY;
         FW_ASSERT(currentIndex < MAX_CONSOLE_CAPACITY, static_cast<FwAssertArgType>(currentIndex),
