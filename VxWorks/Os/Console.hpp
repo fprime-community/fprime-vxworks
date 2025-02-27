@@ -19,7 +19,7 @@ struct VxWorksConsoleHandle : public ConsoleHandle {
     char circularBuffer[MAX_CONSOLE_CAPACITY][MAX_CONSOLE_MESSAGE_BYTE_SIZE];  // Circular buffer to store messages
     std::atomic<FwSizeType> m_tail_index;  // Index pointing to the tail of the circular buffer
 
-    VxWorksConsoleHandle() = default;
+    VxWorksConsoleHandle() { m_tail_index = 0; }
 
     VxWorksConsoleHandle(const VxWorksConsoleHandle& other) {
         if (&other == this) {
