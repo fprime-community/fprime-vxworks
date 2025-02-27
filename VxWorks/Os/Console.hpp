@@ -7,6 +7,8 @@
 #ifndef OS_VXWORKS_Console_HPP
 #define OS_VXWORKS_Console_HPP
 
+#include <atomic>
+
 namespace Os {
 namespace VxWorks {
 namespace Console {
@@ -15,7 +17,21 @@ namespace Console {
 //!
 struct VxWorksConsoleHandle : public ConsoleHandle {
     char circularBuffer[MAX_CONSOLE_CAPACITY][MAX_CONSOLE_MESSAGE_BYTE_SIZE];  // Circular buffer to store messages
-    FwIndexType m_tail_index = 0;  // Index pointing to the tail of the circular buffer
+    std::atomic<FwSizeType> m_tail_index;  // Index pointing to the tail of the circular buffer
+
+    VxWorksConsoleHandle() = default;
+
+    VxWorksConsoleHandle(const VxWorksConsoleHandle& other) {
+        if (&other == this) {
+            return;
+        }
+        m_tail_index = 0;
+    }
+
+    VxWorksConsoleHandle& operator=(const VxWorksConsoleHandle& other) {
+        this->m_tail_index = 0;
+        return *this;
+    }
 };
 
 //! \brief VxWorks implementation of Os::ConsoleInterface
