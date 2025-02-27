@@ -3,6 +3,7 @@
 // \brief VxWorks implementation for Os::Queue
 // ======================================================================
 #include "Queue.hpp"
+#include <intLib.h>
 #include <limits.h>
 #include <Fw/Types/Assert.hpp>
 
