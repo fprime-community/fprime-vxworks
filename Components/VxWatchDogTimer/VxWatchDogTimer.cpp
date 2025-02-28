@@ -40,6 +40,13 @@ void VxWatchDogTimer::startWatchdog(Fw::TimeInterval interval) {
     this->startWatchdog(ticksPerInterval);
 }
 
+void VxWatchDogTimer::stopWatchdog() {
+    if (this->m_watchdogId != nullptr) {
+        STATUS status = wdCancel(this->m_watchdogId);
+        FW_ASSERT(status == VXWORKS_OK);
+    }
+}
+
 void VxWatchDogTimer::s_driverISR(void* arg) {
     FW_ASSERT(arg != nullptr);
 

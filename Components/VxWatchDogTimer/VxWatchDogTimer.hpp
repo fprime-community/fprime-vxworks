@@ -29,6 +29,8 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
 
     void startWatchdog(Fw::TimeInterval interval);
 
+    void stopWatchdog();
+
     PRIVATE :
 
         // static ISR callback
