@@ -25,7 +25,9 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
     //! Destroy VxWatchDogTimer object
     ~VxWatchDogTimer();
 
-    void callIsr(U32 ticks);
+    void startWatchdog(U32 ticks);
+
+    void startWatchdog(Fw::TimeInterval interval);
 
     PRIVATE :
 

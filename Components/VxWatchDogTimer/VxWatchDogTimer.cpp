@@ -5,6 +5,7 @@
 // ======================================================================
 
 #include "Components/VxWatchDogTimer/VxWatchDogTimer.hpp"
+#include <sysLib.h>
 
 namespace Components {
 
@@ -23,20 +24,36 @@ VxWatchDogTimer ::~VxWatchDogTimer() {
     }
 }
 
-void VxWatchDogTimer::callIsr(U32 ticks) {
+void VxWatchDogTimer::startWatchdog(U32 ticks) {
     this->m_tickDelay = ticks;
-    s_driverISR(this);
+    STATUS status = wdStart(this->m_watchdogId, ticks, reinterpret_cast<FUNCPTR>(s_driverISR),
+                            reinterpret_cast<_Vx_usr_arg_t>(this));
+    FW_ASSERT(status == VXWORKS_OK);
+}
+
+void VxWatchDogTimer::startWatchdog(Fw::TimeInterval interval) {
+    static constexpr U32 USECS_PER_SECS = 1000000;
+    U32 delayInUsecs = (interval.getSeconds() * USECS_PER_SECS) + interval.getUSeconds();
+    // Calculate ticks per interval by multiplying interval by number of ticks per second, then round up.
+    static_assert(USECS_PER_SECS != 0, "This constant cannot be 0.");
+    U32 ticksPerInterval = (((delayInUsecs * sysClkRateGet()) + (USECS_PER_SECS - 1)) / USECS_PER_SECS);
+    this->startWatchdog(ticksPerInterval);
 }
 
 void VxWatchDogTimer::s_driverISR(void* arg) {
     FW_ASSERT(arg != nullptr);
+
     // cast argument to component instance
     VxWatchDogTimer* compPtr = static_cast<VxWatchDogTimer*>(arg);
+
     // get time
     Os::RawTime time;
     time.now();
+
     // call output timing signal
     compPtr->CycleOut_out(0, time);
+
+    // Start watchdog timer again
     FW_ASSERT(compPtr->m_watchdogId != nullptr);
     STATUS status = wdStart(compPtr->m_watchdogId, compPtr->m_tickDelay, reinterpret_cast<FUNCPTR>(s_driverISR),
                             reinterpret_cast<_Vx_usr_arg_t>(compPtr));
