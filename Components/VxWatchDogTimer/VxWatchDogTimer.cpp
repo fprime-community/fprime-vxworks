@@ -26,6 +26,7 @@ VxWatchDogTimer ::~VxWatchDogTimer() {
 
 void VxWatchDogTimer::startWatchdog(U32 ticks) {
     this->m_tickDelay = ticks;
+    FW_ASSERT(this->m_watchdogId != nullptr);
     STATUS status = wdStart(this->m_watchdogId, ticks, reinterpret_cast<FUNCPTR>(s_driverISR),
                             reinterpret_cast<_Vx_usr_arg_t>(this));
     FW_ASSERT(status == VXWORKS_OK);
