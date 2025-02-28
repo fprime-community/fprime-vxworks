@@ -3,9 +3,11 @@
 // \brief VxWorks implementation for Os::Console, header and test definitions
 // ======================================================================
 #include <Os/Console.hpp>
-#include <cstdio>
+#include <VxWorksCfg.hpp>
 #ifndef OS_VXWORKS_Console_HPP
 #define OS_VXWORKS_Console_HPP
+
+#include <atomic>
 
 namespace Os {
 namespace VxWorks {
@@ -14,8 +16,22 @@ namespace Console {
 //! ConsoleHandle class definition for VxWorks implementations.
 //!
 struct VxWorksConsoleHandle : public ConsoleHandle {
-    //! VxWorks console file descriptor
-    FILE* m_file_descriptor = stdout;
+    char circularBuffer[MAX_CONSOLE_CAPACITY][MAX_CONSOLE_MESSAGE_BYTE_SIZE];  // Circular buffer to store messages
+    std::atomic<FwSizeType> m_tail_index;  // Index pointing to the tail of the circular buffer
+
+    VxWorksConsoleHandle() { m_tail_index = 0; }
+
+    VxWorksConsoleHandle(const VxWorksConsoleHandle& other) {
+        if (&other == this) {
+            return;
+        }
+        m_tail_index = 0;
+    }
+
+    VxWorksConsoleHandle& operator=(const VxWorksConsoleHandle& other) {
+        this->m_tail_index = 0;
+        return *this;
+    }
 };
 
 //! \brief VxWorks implementation of Os::ConsoleInterface
@@ -26,11 +42,6 @@ struct VxWorksConsoleHandle : public ConsoleHandle {
 //!
 class VxWorksConsole : public ConsoleInterface {
   public:
-    //! Stream selection enumeration
-    enum Stream {
-        STANDARD_OUT = 0,   //!< Use standard output stream
-        STANDARD_ERROR = 1  //!< Use standard error stream
-    };
     //! \brief constructor
     //!
     VxWorksConsole() = default;
@@ -66,12 +77,6 @@ class VxWorksConsole : public ConsoleInterface {
     //! \return raw console handle
     //!
     ConsoleHandle* getHandle() override;
-
-    //! \brief select the output stream
-    //!
-    //! There are two streams defined: standard out, and standard error. This allows users of the VxWorks log
-    //! implementation to chose which stream to use.
-    void setOutputStream(Stream stream);
 
   private:
     //! File handle for VxWorksFile

@@ -3,43 +3,32 @@
 // \brief VxWorks implementation for Os::Console
 // ======================================================================
 #include "Console.hpp"
+#include <logLib.h>
 #include <Fw/Types/Assert.hpp>
-#include <cstdio>
-#include <limits>
+#include <cstring>
 
 namespace Os {
 namespace VxWorks {
 namespace Console {
 
 void VxWorksConsole::writeMessage(const CHAR* message, const FwSizeType size) {
-    // size_t is defined as different sizes on different platforms. Since FwSizeType is likely larger than size_t
-    // on these platforms, and the user is unlikely to console-log more than size_t-max data, we cap the total
-    // size at the limit of the interface.
-    FwSizeType capped_size = (size < std::numeric_limits<size_t>::max())
-                                 ? size
-                                 : static_cast<FwSizeType>(std::numeric_limits<size_t>::max());
     if (message != nullptr) {
-        (void)::fwrite(message, sizeof(CHAR), static_cast<size_t>(capped_size), this->m_handle.m_file_descriptor);
-        (void)::fflush(this->m_handle.m_file_descriptor);
+        static_assert(std::is_unsigned<FwSizeType>::value, "FwSizeType is expected to be unsigned.");
+        static_assert(MAX_CONSOLE_CAPACITY > 0, "Avoid dividing by zero.");
+        static_assert(MAX_CONSOLE_MESSAGE_BYTE_SIZE > 0, "Should not have a message size of 0 bytes.");
+        // Rely on unsigned overflow to atomically roll over tail index
+        const FwSizeType currentIndex = this->m_handle.m_tail_index.fetch_add(1) % MAX_CONSOLE_CAPACITY;
+        FW_ASSERT(currentIndex < MAX_CONSOLE_CAPACITY, static_cast<FwAssertArgType>(currentIndex),
+                  static_cast<FwAssertArgType>(MAX_CONSOLE_CAPACITY));
+        FwSizeType minSize = FW_MIN(size, MAX_CONSOLE_MESSAGE_BYTE_SIZE - 1);
+        (void)memcpy(this->m_handle.circularBuffer[currentIndex], message, minSize);
+        this->m_handle.circularBuffer[currentIndex][minSize] = '\0';
+        (void)logMsg(this->m_handle.circularBuffer[currentIndex], 0, 0, 0, 0, 0, 0);
     }
 }
 
 ConsoleHandle* VxWorksConsole::getHandle() {
     return &this->m_handle;
-}
-
-void VxWorksConsole ::setOutputStream(Stream stream) {
-    switch (stream) {
-        case STANDARD_OUT:
-            this->m_handle.m_file_descriptor = stdout;
-            break;
-        case STANDARD_ERROR:
-            this->m_handle.m_file_descriptor = stderr;
-            break;
-        default:
-            FW_ASSERT(0, static_cast<FwAssertArgType>(stream));
-            break;
-    }
 }
 
 }  // namespace Console
