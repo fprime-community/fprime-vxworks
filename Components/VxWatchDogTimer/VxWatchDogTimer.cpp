@@ -25,19 +25,21 @@ VxWatchDogTimer ::~VxWatchDogTimer() {
 }
 
 void VxWatchDogTimer::startWatchdog(U32 ticks) {
-    this->m_tickDelay = ticks;
+    this->m_tickDelay = static_cast<_Vx_ticks_t>(ticks);
     FW_ASSERT(this->m_watchdogId != nullptr);
-    STATUS status = wdStart(this->m_watchdogId, ticks, reinterpret_cast<FUNCPTR>(s_driverISR),
+    STATUS status = wdStart(this->m_watchdogId, this->m_tickDelay, reinterpret_cast<FUNCPTR>(s_driverISR),
                             reinterpret_cast<_Vx_usr_arg_t>(this));
     FW_ASSERT(status == VXWORKS_OK);
 }
 
 void VxWatchDogTimer::startWatchdog(Fw::TimeInterval interval) {
-    static constexpr U32 USECS_PER_SECS = 1000000;
-    U32 delayInUsecs = (interval.getSeconds() * USECS_PER_SECS) + interval.getUSeconds();
+    static constexpr U32 MS_PER_SECS = 1000;
+    static constexpr U32 USECS_PER_MS = 1000;
+    U64 delayInMs = (interval.getSeconds() * MS_PER_SECS) + (interval.getUSeconds() * USECS_PER_MS);
+    FW_ASSERT(delayInMs <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(delayInMs));
     // Calculate ticks per interval by multiplying interval by number of ticks per second, then round up.
-    static_assert(USECS_PER_SECS != 0, "This constant cannot be 0.");
-    U32 ticksPerInterval = (((delayInUsecs * sysClkRateGet()) + (USECS_PER_SECS - 1)) / USECS_PER_SECS);
+    U64 ticksPerInterval = (((delayInMs * sysClkRateGet()) + (MS_PER_SECS - 1)) / MS_PER_SECS);
+    FW_ASSERT(ticksPerInterval <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(ticksPerInterval));
     this->startWatchdog(ticksPerInterval);
 }
 
@@ -62,10 +64,7 @@ void VxWatchDogTimer::s_driverISR(void* arg) {
     compPtr->CycleOut_out(0, time);
 
     // Start watchdog timer again
-    FW_ASSERT(compPtr->m_watchdogId != nullptr);
-    STATUS status = wdStart(compPtr->m_watchdogId, compPtr->m_tickDelay, reinterpret_cast<FUNCPTR>(s_driverISR),
-                            reinterpret_cast<_Vx_usr_arg_t>(compPtr));
-    FW_ASSERT(status == VXWORKS_OK);
+    compPtr->startWatchdog(compPtr->m_tickDelay);
 }
 
 }  // namespace Components

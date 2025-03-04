@@ -3,64 +3,28 @@
 VxWorks WatchDog Timer
 
 ## Usage Examples
-Add usage examples here
-
-### Diagrams
-Add diagrams here
+Call a function, in ISR context, at a particular rate.
 
 ### Typical Usage
-And the typical usage of the component here
-
-## Class Diagram
-Add a class diagram here
+Drive the system at a particular rate.
 
 ## Port Descriptions
-| Name | Description |
-|---|---|
-|---|---|
-
-## Component States
-Add component states in the chart below
-| Name | Description |
-|---|---|
-|---|---|
-
-## Sequence Diagrams
-Add sequence diagrams here
+| Kind | Name | Port Type | Usage |
+|------|------|-----------|-------|
+| `output` | `CycleOut` | `Svc.Cycle` | The cycle outputs. Meant to be connected to rate group driver |
 
 ## Parameters
-| Name | Description |
-|---|---|
-|---|---|
+
+None
 
 ## Commands
-| Name | Description |
-|---|---|
-|---|---|
+
+None
 
 ## Events
-| Name | Description |
-|---|---|
-|---|---|
+
+None
 
 ## Telemetry
-| Name | Description |
-|---|---|
-|---|---|
 
-## Unit Tests
-Add unit test descriptions in the chart below
-| Name | Description | Output | Coverage |
-|---|---|---|---|
-|---|---|---|---|
-
-## Requirements
-Add requirements in the chart below
-| Name | Description | Validation |
-|---|---|---|
-|---|---|---|
-
-## Change Log
-| Date | Description |
-|---|---|
-|---| Initial Draft |
+None

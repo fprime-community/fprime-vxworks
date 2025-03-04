@@ -41,7 +41,7 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
     // Member variable
     // ----------------------------------------------------------------------
     WDOG_ID m_watchdogId = nullptr;
-    U32 m_tickDelay = 0;
+    _Vx_ticks_t m_tickDelay = 0;
 };
 
 }  // namespace Components
