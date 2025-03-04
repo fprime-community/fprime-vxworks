@@ -35,7 +35,7 @@ void VxWatchDogTimer::startWatchdog(U32 ticks) {
 void VxWatchDogTimer::startWatchdog(Fw::TimeInterval interval) {
     static constexpr U32 MS_PER_SECS = 1000;
     static constexpr U32 USECS_PER_MS = 1000;
-    U64 delayInMs = (interval.getSeconds() * MS_PER_SECS) + (interval.getUSeconds() * USECS_PER_MS);
+    U64 delayInMs = (interval.getSeconds() * MS_PER_SECS) + (interval.getUSeconds() / USECS_PER_MS);
     FW_ASSERT(delayInMs <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(delayInMs));
     // Calculate ticks per interval by multiplying interval by number of ticks per second, then round up.
     U64 ticksPerInterval = (((delayInMs * sysClkRateGet()) + (MS_PER_SECS - 1)) / MS_PER_SECS);
