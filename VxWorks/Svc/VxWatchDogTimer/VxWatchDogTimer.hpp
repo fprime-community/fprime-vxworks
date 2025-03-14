@@ -4,13 +4,13 @@
 // \brief  hpp file for VxWatchDogTimer component implementation class
 // ======================================================================
 
-#ifndef Components_VxWatchDogTimer_HPP
-#define Components_VxWatchDogTimer_HPP
+#ifndef SVC_VXWORKS_VXWATCHDOGTIMER_HPP
+#define SVC_VXWORKS_VXWATCHDOGTIMER_HPP
 
 #include <wdLib.h>
-#include "Components/VxWatchDogTimer/VxWatchDogTimerComponentAc.hpp"
+#include "VxWorks/Svc/VxWatchDogTimer/VxWatchDogTimerComponentAc.hpp"
 
-namespace Components {
+namespace VxWorksSvc {
 
 class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
   public:
@@ -44,6 +44,6 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
     _Vx_ticks_t m_tickDelay = 0;
 };
 
-}  // namespace Components
+}  // namespace VxWorksSvc
 
 #endif

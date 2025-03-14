@@ -4,10 +4,10 @@
 // \brief  cpp file for VxWatchDogTimer component implementation class
 // ======================================================================
 
-#include "Components/VxWatchDogTimer/VxWatchDogTimer.hpp"
+#include "VxWorks/Svc/VxWatchDogTimer/VxWatchDogTimer.hpp"
 #include <sysLib.h>
 
-namespace Components {
+namespace VxWorksSvc {
 
 // ----------------------------------------------------------------------
 // Component construction and destruction
@@ -67,4 +67,4 @@ void VxWatchDogTimer::s_driverISR(void* arg) {
     compPtr->startWatchdog(compPtr->m_tickDelay);
 }
 
-}  // namespace Components
+}  // namespace VxWorksSvc

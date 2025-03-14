@@ -1,4 +1,4 @@
-module Components {
+module VxWorksSvc {
     @ VxWorks WatchDog Timer
     passive component VxWatchDogTimer {
 
