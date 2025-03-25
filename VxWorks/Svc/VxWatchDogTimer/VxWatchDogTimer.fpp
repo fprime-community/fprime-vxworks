@@ -6,6 +6,6 @@ module VxWorksSvc {
     # General ports
     # ----------------------------------------------------------------------
 
-    include "../../lib/fprime/Drv/Interfaces/TickInterface.fppi"
+    include "../../../../fprime/Drv/Interfaces/TickInterface.fppi"
     }
 }
