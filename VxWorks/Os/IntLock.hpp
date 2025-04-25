@@ -25,8 +25,6 @@ class IntLock {
         
         PlatformIntType m_lock; //!< lock value
 
-
-
 };
 
 }  // namespace VxWorks
