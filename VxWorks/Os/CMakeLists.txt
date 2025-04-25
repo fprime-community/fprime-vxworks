@@ -10,9 +10,11 @@ add_custom_target("${FPRIME_CURRENT_MODULE}")
 #### Shared Section ####
 set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/error.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/IntLock.cpp"
 )
 set(HEADER_FILES
     "${CMAKE_CURRENT_LIST_DIR}/error.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/IntLock.hpp"
 )
 register_fprime_module(Os_VxWorks_Shared)
 
