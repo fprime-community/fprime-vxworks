@@ -20,3 +20,4 @@ set(FPRIME_HAS_SOCKETS ON)
 
 # Add VxWorks specific headers into the system
 include_directories(SYSTEM "${CMAKE_CURRENT_LIST_DIR}/types")
+set(FPRIME_PLATFORM_MODULE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/types")
