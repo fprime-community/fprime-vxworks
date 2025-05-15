@@ -17,3 +17,5 @@ choose_fprime_implementation(Os/Task Os/Task/Posix)
 add_compile_definitions(TGT_OS_TYPE_VXWORKS)
 set(FPRIME_USE_POSIX ON)
 set(FPRIME_HAS_SOCKETS ON)
+
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/types/Platform")
