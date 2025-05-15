@@ -15,7 +15,7 @@
 
 #include <Os/Task.hpp>
 
-#include <FpConfig.hpp>
+#include <config/FpConfig.hpp>
 #include <Fw/Deprecate.hpp>
 #include <Fw/Types/Serializable.hpp>
 #include <Os/Mutex.hpp>
