@@ -43,7 +43,7 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
         return QueueInterface::Status::NOT_SUPPORTED;
     }
 
-    PlatformIntType vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
+    int vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
 
     // Casting buffer to match API
     STATUS stat =

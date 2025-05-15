@@ -27,7 +27,7 @@ namespace Task {
 //! TaskHandle class definition for VxWorks implementations.
 //!
 struct VxWorksTaskHandle : public TaskHandle {
-    static constexpr PlatformIntType SUCCESS = 0;
+    static constexpr int SUCCESS = 0;
 
     //! VxWorks task descriptor
     TASK_ID m_task_descriptor = TASK_ID_NULL;
