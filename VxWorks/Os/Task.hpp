@@ -15,7 +15,7 @@
 
 #include <Os/Task.hpp>
 
-#include <FpConfig.hpp>
+#include <config/FpConfig.hpp>
 #include <Fw/Deprecate.hpp>
 #include <Fw/Types/Serializable.hpp>
 #include <Os/Mutex.hpp>
@@ -27,7 +27,7 @@ namespace Task {
 //! TaskHandle class definition for VxWorks implementations.
 //!
 struct VxWorksTaskHandle : public TaskHandle {
-    static constexpr PlatformIntType SUCCESS = 0;
+    static constexpr int SUCCESS = 0;
 
     //! VxWorks task descriptor
     TASK_ID m_task_descriptor = TASK_ID_NULL;

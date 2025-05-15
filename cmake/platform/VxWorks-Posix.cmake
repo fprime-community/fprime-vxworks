@@ -18,5 +18,4 @@ add_compile_definitions(TGT_OS_TYPE_VXWORKS)
 set(FPRIME_USE_POSIX ON)
 set(FPRIME_HAS_SOCKETS ON)
 
-# Add VxWorks specific headers into the system
-include_directories(SYSTEM "${CMAKE_CURRENT_LIST_DIR}/types")
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/types/Platform")

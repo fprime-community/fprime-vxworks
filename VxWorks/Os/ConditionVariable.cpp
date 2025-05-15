@@ -35,7 +35,7 @@ VxWorksConditionVariable::Status VxWorksConditionVariable::pend(Os::Mutex& mutex
     // Keep track of the number sem takes in order to detect re-entry semTakes
     mutex_handle->m_sem_take_counter++;
 
-    PlatformIntType statusReturn = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
+    int statusReturn = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
 
     return Os::VxWorks::vxworks_status_to_conditional_status(statusReturn);
 }

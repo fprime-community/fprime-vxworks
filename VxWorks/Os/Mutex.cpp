@@ -21,7 +21,7 @@ VxWorksMutex::~VxWorksMutex() {
 
 VxWorksMutex::Status VxWorksMutex::take() {
     STATUS status = semTake(this->m_handle.m_mutex_descriptor, WAIT_FOREVER);
-    PlatformIntType statusType = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
+    int statusType = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
 
     // Keep track of semTakes and assert we are not re-entering.
     this->m_handle.m_sem_take_counter++;
@@ -34,7 +34,7 @@ VxWorksMutex::Status VxWorksMutex::release() {
     // Keep track of semTakes
     this->m_handle.m_sem_take_counter--;
     STATUS status = semGive(this->m_handle.m_mutex_descriptor);
-    PlatformIntType statusType = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
+    int statusType = (status == VXWORKS_OK) ? VXWORKS_OK : errno;
     return Os::VxWorks::vxworks_status_to_mutex_status(statusType);
 }
 

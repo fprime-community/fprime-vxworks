@@ -14,6 +14,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
     "${CMAKE_CURRENT_LIST_DIR}/error.hpp"
 )
+set(MOD_DEPS Fw_Types)
 register_fprime_module(Os_VxWorks_Shared)
 
 # Set up VxWorks implementation

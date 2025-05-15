@@ -3,7 +3,7 @@
 // \brief VxWorks implementation for Os::Console, header and test definitions
 // ======================================================================
 #include <Os/Console.hpp>
-#include <VxWorksCfg.hpp>
+#include <config/VxWorksCfg.hpp>
 #ifndef OS_VXWORKS_Console_HPP
 #define OS_VXWORKS_Console_HPP
 
