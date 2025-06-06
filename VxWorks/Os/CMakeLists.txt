@@ -5,17 +5,18 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
+restrict_platforms(vxworks)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
-#### Shared Section ####
-set(SOURCE_FILES
+register_fprime_module(
+    Os_VxWorks_Shared
+  SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/error.cpp"
-)
-set(HEADER_FILES
+  HEADERS
     "${CMAKE_CURRENT_LIST_DIR}/error.hpp"
+  DEPENDS
+    Fw_Types
 )
-set(MOD_DEPS Fw_Types)
-register_fprime_module(Os_VxWorks_Shared)
 
 # Set up VxWorks implementation
 register_os_implementation("Console" VxWorks)
