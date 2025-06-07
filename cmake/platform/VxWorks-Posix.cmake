@@ -14,6 +14,7 @@ register_fprime_config(
    INTERFACE # No buildable files generated
    CHOOSES_IMPLEMENTATIONS
         Os_Console_Posix
+        Os_File_Posix
         Os_Mutex_Posix
         Os_Generic_PriorityQueue
         Os_RawTime_Posix
@@ -21,7 +22,6 @@ register_fprime_config(
         Fw_StringFormat_snprintf
         # No VxWorks Implementation
         Os_Cpu_Stub
-        Os_File_Stub
         Os_Memory_Stub
 )
 target_compile_definitions(PlatformVxWorksPosix INTERFACE -DTGT_OS_TYPE_VXWORKS)
