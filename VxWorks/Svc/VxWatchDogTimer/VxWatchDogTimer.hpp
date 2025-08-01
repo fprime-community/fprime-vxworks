@@ -25,17 +25,15 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
     //! Destroy VxWatchDogTimer object
     ~VxWatchDogTimer();
 
-    void startTimer(U32 ticks);
+    void quit();
 
     void startTimer(Fw::TimeInterval interval);
 
-    void quit();
+  private:
+    // static ISR callback
+    static void s_driverISR(void* arg);
 
-    private :
-
-        // static ISR callback
-        static void
-        s_driverISR(void* arg);
+    void startTimer(U32 ticks);
 
     // ----------------------------------------------------------------------
     // Member variable
