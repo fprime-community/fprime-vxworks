@@ -24,7 +24,7 @@ VxWatchDogTimer ::~VxWatchDogTimer() {
     }
 }
 
-void VxWatchDogTimer::startWatchdog(U32 ticks) {
+void VxWatchDogTimer::startTimer(U32 ticks) {
     this->m_tickDelay = static_cast<_Vx_ticks_t>(ticks);
     FW_ASSERT(this->m_watchdogId != nullptr);
     STATUS status = wdStart(this->m_watchdogId, this->m_tickDelay, reinterpret_cast<FUNCPTR>(s_driverISR),
@@ -32,7 +32,7 @@ void VxWatchDogTimer::startWatchdog(U32 ticks) {
     FW_ASSERT(status == VXWORKS_OK);
 }
 
-void VxWatchDogTimer::startWatchdog(Fw::TimeInterval interval) {
+void VxWatchDogTimer::startTimer(Fw::TimeInterval interval) {
     static constexpr U32 MS_PER_SECS = 1000;
     static constexpr U32 USECS_PER_MS = 1000;
     U64 delayInMs = (interval.getSeconds() * MS_PER_SECS) + (interval.getUSeconds() / USECS_PER_MS);
@@ -40,10 +40,10 @@ void VxWatchDogTimer::startWatchdog(Fw::TimeInterval interval) {
     // Calculate ticks per interval by multiplying interval by number of ticks per second, then round up.
     U64 ticksPerInterval = (((delayInMs * sysClkRateGet()) + (MS_PER_SECS - 1)) / MS_PER_SECS);
     FW_ASSERT(ticksPerInterval <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(ticksPerInterval));
-    this->startWatchdog(ticksPerInterval);
+    this->startTimer(ticksPerInterval);
 }
 
-void VxWatchDogTimer::stopWatchdog() {
+void VxWatchDogTimer::quit() {
     if (this->m_watchdogId != nullptr) {
         STATUS status = wdCancel(this->m_watchdogId);
         FW_ASSERT(status == VXWORKS_OK);
@@ -64,7 +64,7 @@ void VxWatchDogTimer::s_driverISR(void* arg) {
     compPtr->CycleOut_out(0, time);
 
     // Start watchdog timer again
-    compPtr->startWatchdog(compPtr->m_tickDelay);
+    compPtr->startTimer(compPtr->m_tickDelay);
 }
 
 }  // namespace VxWorksSvc
