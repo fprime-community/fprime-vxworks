@@ -31,7 +31,7 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
 
     void stopWatchdog();
 
-    PRIVATE :
+    private :
 
         // static ISR callback
         static void
