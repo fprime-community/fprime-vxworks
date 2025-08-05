@@ -7,6 +7,7 @@
 #ifndef SVC_VXWORKS_VXWATCHDOGTIMER_HPP
 #define SVC_VXWORKS_VXWATCHDOGTIMER_HPP
 
+#include <sysLib.h>
 #include <wdLib.h>
 #include "VxWorks/Svc/VxWatchDogTimer/VxWatchDogTimerComponentAc.hpp"
 
@@ -25,21 +26,23 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
     //! Destroy VxWatchDogTimer object
     ~VxWatchDogTimer();
 
-    void startWatchdog(U32 ticks);
+    void quit();
 
-    void startWatchdog(Fw::TimeInterval interval);
+    void startTimer(Fw::TimeInterval interval);
 
-    void stopWatchdog();
+    void startTimer(FwSizeType milliseconds);
 
-    PRIVATE :
+    void startTimerTick(_Vx_ticks_t ticks);
 
-        // static ISR callback
-        static void
-        s_driverISR(void* arg);
+  private:
+    // static ISR callback
+    static void s_driverISR(void* arg);
 
     // ----------------------------------------------------------------------
     // Member variable
     // ----------------------------------------------------------------------
+    static constexpr U32 MS_PER_SECS = 1000;
+    static constexpr U32 USECS_PER_MS = 1000;
     WDOG_ID m_watchdogId = nullptr;
     _Vx_ticks_t m_tickDelay = 0;
 };
