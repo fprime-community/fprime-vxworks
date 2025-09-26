@@ -15,7 +15,7 @@
 
 #include <Os/Task.hpp>
 
-#include <FpConfig.hpp>
+#include <config/FpConfig.hpp>
 #include <Fw/Deprecate.hpp>
 #include <Fw/Types/Serializable.hpp>
 #include <Os/Mutex.hpp>
@@ -27,7 +27,7 @@ namespace Task {
 //! TaskHandle class definition for VxWorks implementations.
 //!
 struct VxWorksTaskHandle : public TaskHandle {
-    static constexpr PlatformIntType SUCCESS = 0;
+    static constexpr int SUCCESS = 0;
 
     //! VxWorks task descriptor
     TASK_ID m_task_descriptor = TASK_ID_NULL;
@@ -104,7 +104,7 @@ class VxWorksTask : public TaskInterface {
     //! \brief return the underlying task handle (implementation specific)
     //! \return internal task handle representation
     TaskHandle* getHandle() override;
-    PRIVATE :
+    private :
         //! \brief create a configured pthread
         //!
         //! Creates, and configures, but does not start a pthread. This may be called twice, once to try setting

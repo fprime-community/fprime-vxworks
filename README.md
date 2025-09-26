@@ -14,7 +14,7 @@ Make sure to add the following to your project's `settings.ini` file:
 > NOTE: `VX_TARGET_TYPE`, `FPRIME_PLATFORM`, and `WIND_CC_SYSROOT` are required definitions by this VxWorks toolchain. 
 
 ### Example settings.ini
-This is an example for a project's `settings.ini` file that uses fprime-vxworks for POSIX. 
+This is an example for a project's `settings.ini` file that uses fprime-vxworks.
 ```
 [fprime]
 project_root: .
@@ -31,5 +31,3 @@ default_cmake_options:  FPRIME_ENABLE_FRAMEWORK_UTS=OFF
 [environment]
 WIND_CC_SYSROOT: $HOME/projects/vxworks/vxworks-7-bsp-generator/bsp/VxWorks7-22.09-BeagleBoneBlack-Source
 ```
-## Configuration
-Copy the configuration file [`config/VxWorksCfg.hpp`](config/VxWorksCfg.hpp) to your project's configuration directory.

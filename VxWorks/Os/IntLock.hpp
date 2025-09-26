@@ -23,7 +23,7 @@ class IntLock {
         void unLock();
     private:
         
-        PlatformIntType m_lock; //!< lock value
+        U32 m_lock; //!< lock value
 
 };
 

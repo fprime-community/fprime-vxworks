@@ -16,7 +16,7 @@ VxWorksQueue::~VxWorksQueue() {
 }
 
 QueueInterface::Status VxWorksQueue::create(const Fw::StringBase& name, FwSizeType depth, FwSizeType messageSize) {
-    this->m_handle.m_queue = msgQCreate(depth, messageSize, MSG_Q_PRIORITY);
+    this->m_handle.m_queue = msgQCreate(static_cast<size_t>(depth), static_cast<size_t>(messageSize), MSG_Q_PRIORITY);
     if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
         return QueueInterface::Status::UNINITIALIZED;
     }
@@ -43,11 +43,12 @@ QueueInterface::Status VxWorksQueue::send(const U8* buffer,
         return QueueInterface::Status::NOT_SUPPORTED;
     }
 
-    PlatformIntType vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
+    int vxPrio = (priority > 0) ? MSG_PRI_URGENT : MSG_PRI_NORMAL;
 
     // Casting buffer to match API
-    STATUS stat = msgQSend(this->m_handle.m_queue, reinterpret_cast<char*>(const_cast<U8*>(buffer)), size,
-                           (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER, vxPrio);
+    STATUS stat =
+        msgQSend(this->m_handle.m_queue, reinterpret_cast<char*>(const_cast<U8*>(buffer)), static_cast<size_t>(size),
+                 (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER, vxPrio);
 
     if (stat == VXWORKS_ERROR) {
         switch (errno) {
@@ -74,8 +75,9 @@ QueueInterface::Status VxWorksQueue::receive(U8* destination,
     }
 
     // Casting destination to match API
-    actualSize = msgQReceive(this->m_handle.m_queue, reinterpret_cast<char*>(destination), capacity,
-                             (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER);
+    actualSize =
+        msgQReceive(this->m_handle.m_queue, reinterpret_cast<char*>(destination), static_cast<size_t>(capacity),
+                    (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER);
 
     if (actualSize == VXWORKS_ERROR) {
         actualSize = 0;

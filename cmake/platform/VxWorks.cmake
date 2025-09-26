@@ -5,17 +5,25 @@
 ####
 register_fprime_target("${CMAKE_CURRENT_LIST_DIR}/../target/vxvalidate.cmake")
 
-choose_fprime_implementation(Os/Console Os/Console/VxWorks)
-choose_fprime_implementation(Os/Cpu Os/Cpu/Stub)
-choose_fprime_implementation(Os/File Os/File/Stub)
-choose_fprime_implementation(Os/Memory Os/Memory/Stub)
-choose_fprime_implementation(Os/Mutex Os/Mutex/VxWorks)
-choose_fprime_implementation(Os/Queue Os/Queue/VxWorks)
-choose_fprime_implementation(Os/RawTime Os/RawTime/Stub)
-choose_fprime_implementation(Os/Task Os/Task/VxWorks)
-
-add_compile_definitions(TGT_OS_TYPE_VXWORKS)
 set(FPRIME_HAS_SOCKETS ON)
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/types/Platform")
 
-# Add VxWorks specific headers into the system
-include_directories(SYSTEM "${CMAKE_CURRENT_LIST_DIR}/types")
+register_fprime_config(
+        PlatformVxWorks
+   INTERFACE # No buildable files generated
+   CHOOSES_IMPLEMENTATIONS
+        Os_Console_VxWorks
+        Os_Mutex_VxWorks
+        Os_Queue_VxWorks
+        Os_Task_VxWorks
+        Fw_StringFormat_snprintf
+        # No VxWorks Implementation
+        Os_Cpu_Stub
+        Os_File_Stub
+        Os_Memory_Stub
+        Os_RawTime_Stub
+        Os_IntLock_VxWorks
+   BASE_CONFIG
+)
+
+target_compile_definitions(PlatformVxWorks INTERFACE -DTGT_OS_TYPE_VXWORKS)

@@ -5,21 +5,35 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
+restrict_platforms(vxworks)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
-#### Shared Section ####
-set(SOURCE_FILES
+register_fprime_module(
+    Os_VxWorks_Shared
+  SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/error.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/IntLock.cpp"
-)
-set(HEADER_FILES
+  HEADERS
     "${CMAKE_CURRENT_LIST_DIR}/error.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/IntLock.hpp"
+  DEPENDS
+    Fw_Time
+    Fw_Types
 )
-register_fprime_module(Os_VxWorks_Shared)
 
 # Set up VxWorks implementation
 register_os_implementation("Console" VxWorks)
 register_os_implementation("Mutex;ConditionVariable" VxWorks Os_VxWorks_Shared)
 register_os_implementation("Queue" VxWorks)
+#register_os_implementation("IntLock" VxWorks)
 register_os_implementation("Task" VxWorks Os_VxWorks_Shared Fw_Time)
+
+register_fprime_implementation(
+    Os_IntLock_VxWorks
+  IMPLEMENTS
+    Os_IntLock
+  DEPENDS
+    Fw_Types
+  SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/IntLock.cpp"
+  HEADERS
+    "${CMAKE_CURRENT_LIST_DIR}/IntLock.hpp"
+)
