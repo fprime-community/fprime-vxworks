@@ -40,7 +40,7 @@ Repository = "https://github.jpl.nasa.gov/FPRIME/ci-tools"
 
 
 [project.entry-points.fprime_gds]
-vxworks = "fprime_ci.plugins.vxworks:VxWorksCi"
+vxworks = "fprime_vxworks.plugins.vxworks:VxWorksCi"
 
 ####
 # setuptools_scm dynamically generates version number from git, as well as automatically

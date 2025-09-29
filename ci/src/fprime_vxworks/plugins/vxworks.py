@@ -25,7 +25,7 @@ from fprime_ci.utilities import IOLogger
 LOGGER = logging.getLogger(__name__)
 
 @plugin(Ci)
-class VxWorksDkm(Ci):
+class VxWorksCi(Ci):
     """ VxWorks CI plugin implementation supporting DKMs """
     class Keys(Ci.Keys):
         """ Additional keys used during the execution of the VxWorks plugin
@@ -86,7 +86,7 @@ class VxWorksDkm(Ci):
         Returns:
             context with optionally set platform, generated_arguments and build_argument
         """
-        subprocess.run([context["wr-shell-path"], "make"], cwd=context[VxWorksDkm.Keys.VIP_PATH]).check_returncode()
+        subprocess.run([context["wr-shell-path"], "make"], cwd=context[VxWorksCi.Keys.VIP_PATH]).check_returncode()
         return context
 
     def preload(self, context: dict):
@@ -105,13 +105,13 @@ class VxWorksDkm(Ci):
         Returns:
             context optionally augmented with plugin-specific preload data
         """
-        context["dkm_path"] = f"data/{context[VxWorksDkm.Keys.DEPLOYMENT_NAME]}"
+        context["dkm_path"] = f"data/{context[VxWorksCi.Keys.DEPLOYMENT_NAME]}"
 
         for path in context[Ci.Keys.BUILD_OUTPUTS]:
-            destination_path = Path(context[VxWorksDkm.Keys.REMOTE_DATA]) / path.name
+            destination_path = Path(context[VxWorksCi.Keys.REMOTE_DATA]) / path.name
             if destination_path.exists():
                 destination_path.unlink()
-            shutil.copy(path, context[VxWorksDkm.Keys.REMOTE_DATA])
+            shutil.copy(path, context[VxWorksCi.Keys.REMOTE_DATA])
             permissions = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | \
                           stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP | \
                           stat.S_IROTH

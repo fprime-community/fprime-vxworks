@@ -2,15 +2,16 @@
 deployment-name: ReferenceDeployment
 platform-name: vxworks
 power-port: 0
-test-script: ReferenceDeployment/test/int/test.py
+test-scripts:
+  - ReferenceDeployment/test/int/test.py
 
 # Optional CI system config
 jobs: 4
 
 extra-gds-arguments:
   - --zmq-transport
-  - ipc:///tmp/fprime-server-ci-in
-  - ipc:///tmp/fprime-server-ci-out
+  - ipc:///tmp/fprime-server-ci-in-bbb
+  - ipc:///tmp/fprime-server-ci-out-bbb
   - --ip-client
   - --ip-address
   - 192.168.0.254
@@ -20,13 +21,13 @@ extra-gds-arguments:
 extra-pytest-arguments:
   - -s
   - --zmq-transport
-  - ipc:///tmp/fprime-server-ci-in
-  - ipc:///tmp/fprime-server-ci-out
+  - ipc:///tmp/fprime-server-ci-in-bbb
+  - ipc:///tmp/fprime-server-ci-out-bbb
 
 # Plugin CLI arguments
 plugin:
   ci-selection: vxworks-dkm
-  port: /dev/ttyUSB0
+  port: /dev/bbb
   baud: 115200
 
 # Plugin required keys
