@@ -190,7 +190,7 @@ class VxWorksCi(Ci):
         return {
             ("--port",): {
                 "type": str,
-                "default": "/dev/ttyUSB0",
+                "default": "/dev/bbb",
                 "help": "Serial port used to communicate with VxWorks",
             },
             ("--baud",): {
