@@ -14,7 +14,7 @@ extra-gds-arguments:
   - ipc:///tmp/fprime-server-ci-out-bbb
   - --ip-client
   - --ip-address
-  - 192.168.0.254
+  - 192.168.0.253
   - --gui-port
   - "4444"
 
@@ -23,6 +23,8 @@ extra-pytest-arguments:
   - --zmq-transport
   - ipc:///tmp/fprime-server-ci-in-bbb
   - ipc:///tmp/fprime-server-ci-out-bbb
+  - --deployment-config
+  - ReferenceDeployment/test/int/int_config.json
 
 # Plugin CLI arguments
 plugin:
