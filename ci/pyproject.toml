@@ -35,8 +35,8 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://fprime.jpl.nasa.gov"
-Documentation = "https://nasa.github.io/fprime/"
-Repository = "https://github.jpl.nasa.gov/FPRIME/ci-tools"
+Documentation = "https://fprime.jpl.nasa.gov/docs"
+Repository = "https://github.com/fprime-community/fprime-vxworks"
 
 
 [project.entry-points.fprime_gds]
