@@ -4,6 +4,9 @@ platform-name: vxworks
 power-port: 0
 test-scripts:
   - ReferenceDeployment/test/int/test.py
+  - lib/fprime/Svc/CmdDispatcher/test/int/test_cmd_dispatcher.py
+  - lib/fprime/Svc/EventManager/test/int/test_cmd_eventManager.py
+  - lib/fprime/Svc/Version/test/int/test_cmd_version.py
 
 # Optional CI system config
 jobs: 4
