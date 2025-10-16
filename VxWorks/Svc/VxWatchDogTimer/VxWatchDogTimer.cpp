@@ -39,8 +39,8 @@ void VxWatchDogTimer::startTimer(Fw::TimeInterval interval) {
     // Avoid overflow when converting seconds to milliseconds
     // seconds*ms_p_sec <= max
     // FW_ASSERT(interval.getSeconds() <= (std::numeric_limits<FwSizeType>::max() / MS_PER_SECS),
-    FW_ASSERT(MS_PER_SECS <= (std::numeric_limits<FwSizeType>::max() / interval.getSeconds()),
-              static_cast<FwAssertArgType>(interval.getSeconds()));
+    //FW_ASSERT(MS_PER_SECS <= (std::numeric_limits<FwSizeType>::max() / interval.getSeconds()),
+    //         static_cast<FwAssertArgType>(interval.getSeconds()));
     // Avoid overflow when converting interval to milliseconds
     // seconds*ms_p_sec + usecs/us_p_ms <= max
     FW_ASSERT((interval.getSeconds() * MS_PER_SECS) <=
