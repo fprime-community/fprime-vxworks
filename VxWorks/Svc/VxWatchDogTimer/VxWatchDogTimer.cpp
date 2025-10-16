@@ -24,31 +24,23 @@ VxWatchDogTimer ::~VxWatchDogTimer() {
     }
 }
 
-void VxWatchDogTimer::startTimer(FwSizeType milliseconds) {
-    // Calculate ticks per interval by multiplying interval by number of ticks per second, then round up.
-    // Make sure we do not overflow
-    // ms * rate + (ms_p_sec - 1) <= max
-    FW_ASSERT(milliseconds != 0);
-    FW_ASSERT(sysClkRateGet() <= ((std::numeric_limits<_Vx_ticks_t>::max() - (MS_PER_SECS - 1)) / milliseconds),
-              static_cast<FwAssertArgType>(sysClkRateGet()), static_cast<FwAssertArgType>(milliseconds));
-    this->m_tickDelay = ((milliseconds * sysClkRateGet()) + (MS_PER_SECS - 1)) / MS_PER_SECS;
+void VxWatchDogTimer::startTimer(FwSizeType microseconds) {
+    FW_ASSERT(microseconds != 0);
+    // Avoid overflow
+    // usecs * clkRate + (us_p_s - 1) <= max
+    // clkRate <= (max - (us_p_s - 1)) / usecs
+    FW_ASSERT(sysClkRateGet() <= (std::numeric_limits<_Vx_ticks_t>::max() - (USECS_PER_SECS - 1)) / microseconds, static_cast<FwAssertArgType>(sysClkRateGet()), static_cast<FwAssertArgType>(microseconds));
+    this->m_tickDelay = ((microseconds * sysClkRateGet()) + ((USECS_PER_MS * MS_PER_SECS) - 1)) / (USECS_PER_MS*MS_PER_SECS);
     this->startTimerTick(this->m_tickDelay);
 }
 
 void VxWatchDogTimer::startTimer(Fw::TimeInterval interval) {
-    // Avoid overflow when converting seconds to milliseconds
-    // seconds*ms_p_sec <= max
-    // FW_ASSERT(interval.getSeconds() <= (std::numeric_limits<FwSizeType>::max() / MS_PER_SECS),
-    FW_ASSERT(MS_PER_SECS <= (std::numeric_limits<FwSizeType>::max() / interval.getSeconds()),
-              static_cast<FwAssertArgType>(interval.getSeconds()));
-    // Avoid overflow when converting interval to milliseconds
-    // seconds*ms_p_sec + usecs/us_p_ms <= max
-    FW_ASSERT((interval.getSeconds() * MS_PER_SECS) <=
-                  (std::numeric_limits<FwSizeType>::max() - (interval.getUSeconds() / USECS_PER_MS)),
-              static_cast<FwAssertArgType>(interval.getSeconds()),
-              static_cast<FwAssertArgType>(interval.getUSeconds()));
-    FwSizeType milliseconds = (interval.getSeconds() * MS_PER_SECS) + (interval.getUSeconds() / USECS_PER_MS);
-    this->startTimer(milliseconds);
+    // Avoid overflow when converting interval to microseconds
+    // (seconds * us_p_ms * ms_p_s) + usecs <= max
+    // seconds <= (max - usecs) / (us_p_ms * ms_p_s)
+    FW_ASSERT(interval.getSeconds() <= (std::numeric_limits<FwSizeType>::max() - interval.getUSeconds()) / USECS_PER_SECS, static_cast<FwAssertArgType>(interval.getSeconds()), static_cast<FwAssertArgType>(interval.getUSeconds()));
+    FwSizeType microseconds = (interval.getSeconds() * USECS_PER_MS * MS_PER_SECS) + interval.getUSeconds();
+    this->startTimer(microseconds);
 }
 
 void VxWatchDogTimer::startTimerTick(_Vx_ticks_t ticks) {
