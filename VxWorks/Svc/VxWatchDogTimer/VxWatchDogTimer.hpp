@@ -30,7 +30,7 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
 
     void startTimer(Fw::TimeInterval interval);
 
-    void startTimer(FwSizeType milliseconds);
+    void startTimer(FwSizeType microseconds);
 
     void startTimerTick(_Vx_ticks_t ticks);
 
@@ -41,8 +41,7 @@ class VxWatchDogTimer : public VxWatchDogTimerComponentBase {
     // ----------------------------------------------------------------------
     // Member variable
     // ----------------------------------------------------------------------
-    static constexpr U32 MS_PER_SECS = 1000;
-    static constexpr U32 USECS_PER_MS = 1000;
+    static constexpr U32 USECS_PER_SECS = 1000000;
     WDOG_ID m_watchdogId = nullptr;
     _Vx_ticks_t m_tickDelay = 0;
 };
