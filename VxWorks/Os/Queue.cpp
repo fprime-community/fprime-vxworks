@@ -15,7 +15,7 @@ VxWorksQueue::~VxWorksQueue() {
     (void)msgQDelete(this->m_handle.m_queue);
 }
 
-QueueInterface::Status VxWorksQueue::create(const Fw::StringBase& name, FwSizeType depth, FwSizeType messageSize) {
+QueueInterface::Status VxWorksQueue::create(const Fw::ConstStringBase& name, FwSizeType depth, FwSizeType messageSize) {
     this->m_handle.m_queue = msgQCreate(static_cast<size_t>(depth), static_cast<size_t>(messageSize), MSG_Q_PRIORITY);
     if (this->m_handle.m_queue == MSG_Q_ID_NULL) {
         return QueueInterface::Status::UNINITIALIZED;
