@@ -32,7 +32,7 @@ void VxWatchDogTimer::startTimer(FwSizeType microseconds) {
     const _Vx_ticks_t clkRate = sysClkRateGet();
     FW_ASSERT(clkRate <= (std::numeric_limits<_Vx_ticks_t>::max() - (USECS_PER_SECS - 1)) / microseconds,
               static_cast<FwAssertArgType>(clkRate), static_cast<FwAssertArgType>(microseconds));
-    this->m_tickDelay = ((microseconds * clkRate) + (USECS_PER_SECS - 1)) / USECS_PER_SECS;
+    this->m_tickDelay = static_cast<_Vx_ticks_t>(((microseconds * clkRate) + (USECS_PER_SECS - 1)) / USECS_PER_SECS);
     this->startTimerTick(this->m_tickDelay);
 }
 
