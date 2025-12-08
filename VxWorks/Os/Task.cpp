@@ -21,9 +21,8 @@ namespace Task {
 //!< FUNCPTR signature required by VxWorks7 and calls the routine
 //!< with the provides arg. This wrapper function is expected to be
 //!< passed in to taskCreate.
-static int myRoutineWrapper(
-    Os::TaskInterface::taskRoutine routine,  //!< Routine that should run in a thread
-    void* arg                                //!< Argument passed to the routine
+static int myRoutineWrapper(Os::TaskInterface::taskRoutine routine,  //!< Routine that should run in a thread
+                            void* arg                                //!< Argument passed to the routine
 ) {
     routine(arg);
     return OK;
