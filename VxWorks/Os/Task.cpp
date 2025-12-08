@@ -39,6 +39,8 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
     auto minimumStringSize = FW_MIN(sizeof(taskName), arguments.m_name.getCapacity());
     memcpy(taskName, arguments.m_name.toChar(), minimumStringSize);
 
+    FW_ASSERT(arguments.m_stackSize != Os::Task::TASK_DEFAULT, static_cast<FwAssertArgType>(arguments.m_stackSize));
+
     this->m_handle.m_task_descriptor = taskCreate(
         taskName, static_cast<int>(arguments.m_priority), VX_FP_TASK, static_cast<size_t>(arguments.m_stackSize),
         reinterpret_cast<FUNCPTR>(myRoutineWrapper), reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine),
