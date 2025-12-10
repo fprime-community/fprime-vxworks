@@ -43,16 +43,22 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
         return Os::Task::Status::INVALID_STACK;
     }
 
-    this->m_handle.m_task_descriptor = taskCreate(
-        taskName, static_cast<int>(arguments.m_priority), VX_FP_TASK, static_cast<size_t>(arguments.m_stackSize),
-        reinterpret_cast<FUNCPTR>(myRoutineWrapper), reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine),
-        reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine_argument), 0, 0, 0, 0, 0, 0, 0, 0);
+    int priority = arguments.m_priority;
+    if (arguments.m_priority == Os::Task::TASK_PRIORITY_DEFAULT) {
+        priority = 255;  // lowest priority
+    }
+
+    this->m_handle.m_task_descriptor =
+        taskCreate(taskName, priority, VX_FP_TASK, static_cast<size_t>(arguments.m_stackSize),
+                   reinterpret_cast<FUNCPTR>(myRoutineWrapper), reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine),
+                   reinterpret_cast<_Vx_usr_arg_t>(arguments.m_routine_argument), 0, 0, 0, 0, 0, 0, 0, 0);
 
     if (this->m_handle.m_task_descriptor == TASK_ID_NULL) {
         return Os::Task::Status::UNKNOWN_ERROR;
     }
 
 #ifdef _WRS_CONFIG_SMP
+    // when cpuAffinity is set to TASK_DEFAULT, the affinity will be assigned by the scheduler
     if (arguments.m_cpuAffinity != Os::Task::TASK_DEFAULT) {
         cpuset_t aff;
 
