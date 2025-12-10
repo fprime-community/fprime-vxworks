@@ -43,7 +43,7 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
         return Os::Task::Status::INVALID_STACK;
     }
 
-    int priority = arguments.m_priority;
+    int priority = static_cast<int>(arguments.m_priority);
     if (arguments.m_priority == Os::Task::TASK_PRIORITY_DEFAULT) {
         priority = 255;  // lowest priority
     }
