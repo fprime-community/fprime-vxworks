@@ -44,7 +44,7 @@ Os::Task::Status VxWorksTask::start(const Arguments& arguments) {
     }
 
     if (arguments.m_priority == Os::Task::TASK_PRIORITY_DEFAULT) {
-        return Os::Task::Status::INVALID_PARAMS;
+        return Os::Task::Status::INVALID_PRIORITY;
     }
 
     this->m_handle.m_task_descriptor = taskCreate(
