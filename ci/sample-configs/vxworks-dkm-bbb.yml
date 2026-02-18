@@ -7,6 +7,8 @@ test-scripts:
   - lib/fprime/Svc/CmdDispatcher/test/int/test_cmd_dispatcher.py
   - lib/fprime/Svc/EventManager/test/int/test_cmd_eventManager.py
   - lib/fprime/Svc/Version/test/int/test_cmd_version.py
+dictionary: build-artifacts/vxworks/FprimeVxWorksReference_ReferenceDeployment/dict/FprimeVxWorksReferenceTopologyDictionary.json
+executable: build-artifacts/vxworks/FprimeVxWorksReference_ReferenceDeployment/bin/FprimeVxWorksReference_ReferenceDeployment
 
 # Optional CI system config
 jobs: 4
