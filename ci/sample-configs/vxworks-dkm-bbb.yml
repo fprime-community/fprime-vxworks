@@ -3,7 +3,7 @@ deployment-name: ReferenceDeployment
 platform-name: vxworks
 power-port: 0
 test-scripts:
-  - ReferenceDeployment/test/int/test.py
+  - FprimeVxWorksReference/ReferenceDeployment/test/int/test.py
   - lib/fprime/Svc/CmdDispatcher/test/int/test_cmd_dispatcher.py
   - lib/fprime/Svc/EventManager/test/int/test_cmd_eventManager.py
   - lib/fprime/Svc/Version/test/int/test_cmd_version.py
@@ -27,7 +27,7 @@ extra-pytest-arguments:
   - ipc:///tmp/fprime-server-ci-in-bbb
   - ipc:///tmp/fprime-server-ci-out-bbb
   - --deployment-config
-  - ReferenceDeployment/test/int/int_config.json
+  - FprimeVxWorksReference/ReferenceDeployment/test/int/int_config.json
 
 # Plugin CLI arguments
 plugin:
