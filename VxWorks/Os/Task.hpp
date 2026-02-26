@@ -99,7 +99,7 @@ class VxWorksTask : public TaskInterface {
     //!
     //! \param interval: delay time
     //! \return status of the delay
-    Status _delay(Fw::TimeInterval interval) override;
+    Status _delay(const Fw::TimeInterval& interval) override;
 
     //! \brief return the underlying task handle (implementation specific)
     //! \return internal task handle representation

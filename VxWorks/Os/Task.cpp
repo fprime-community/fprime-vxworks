@@ -100,7 +100,7 @@ void VxWorksTask::resume() {
     FW_ASSERT(status == OK, static_cast<FwAssertArgType>(status));
 }
 
-Os::Task::Status VxWorksTask::_delay(Fw::TimeInterval interval) {
+Os::Task::Status VxWorksTask::_delay(const Fw::TimeInterval& interval) {
     // Lookup the number of clock ticks for the specified
     // number of milliseconds. Use the ticks to call the
     // task delay function call.
