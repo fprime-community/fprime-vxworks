@@ -12,7 +12,7 @@ register_fprime_config(
         PlatformVxWorks
    INTERFACE # No buildable files generated
    CHOOSES_IMPLEMENTATIONS
-        Os_Console_VxWorks
+        Os_ConsoleNoWait_VxWorks
         Os_Mutex_VxWorks
         Os_Queue_VxWorks
         Os_Task_VxWorks
