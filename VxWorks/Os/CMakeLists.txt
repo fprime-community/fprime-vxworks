@@ -22,8 +22,8 @@ register_fprime_module(
 register_fprime_implementation(
         Os_Console_VxWorks
     SOURCES
-       "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
        "${CMAKE_CURRENT_LIST_DIR}/ConsoleWait.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
        "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp"
     HEADERS
        "${CMAKE_CURRENT_LIST_DIR}/Console.hpp"
@@ -36,8 +36,8 @@ register_fprime_implementation(
 register_fprime_implementation(
         Os_ConsoleNoWait_VxWorks
     SOURCES
-       "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
        "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
        "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp"
     HEADERS
        "${CMAKE_CURRENT_LIST_DIR}/Console.hpp"
