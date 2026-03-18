@@ -48,6 +48,11 @@ class VxWorksQueue : public QueueInterface {
     //! \return: status of the creation
     Status create(FwEnumStoreType id, const Fw::ConstStringBase& name, FwSizeType depth, FwSizeType messageSize) override;
 
+    //! \brief teardown the queue
+    //!
+    //! Allow for queues to deallocate resources as part of system shutdown.
+    void teardown() override;
+
     //! \brief send a message into the queue
     //!
     //! Send a message into the queue, providing the message data, size, priority, and blocking type. When
