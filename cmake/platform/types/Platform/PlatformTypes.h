@@ -19,14 +19,29 @@ extern "C" {
 #include <vxWorks.h>
 
 // Capture current value of VxWorks constants
-enum VxWorksConstants { VXWORKS_ERROR = ERROR, VXWORKS_READ = READ, VXWORKS_OK = OK, VXWORKS_NO_WAIT = NO_WAIT };
+enum VxWorksConstants {
+	VXWORKS_ERROR = ERROR,
+	VXWORKS_READ = READ,
+	VXWORKS_OK = OK,
+	VXWORKS_NO_WAIT = NO_WAIT,
+	VXWORKS_NONE = NONE
+};
+
 #undef OK
 #undef ERROR
 #undef READ
 #undef NO_WAIT
+#undef NONE
 
 // Redefine constants as enumeration
-enum { ERROR = VXWORKS_ERROR, READ = VXWORKS_READ, OK = VXWORKS_OK, NO_WAIT = VXWORKS_NO_WAIT };
+enum {
+	ERROR = VXWORKS_ERROR,
+	READ = VXWORKS_READ,
+	OK = VXWORKS_OK,
+	NO_WAIT = VXWORKS_NO_WAIT,
+	NONE = VXWORKS_NONE
+};
+
 #include <inttypes.h>
 #include <stdint.h>
 

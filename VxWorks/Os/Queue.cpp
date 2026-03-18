@@ -12,7 +12,14 @@ namespace VxWorks {
 namespace Queue {
 
 VxWorksQueue::~VxWorksQueue() {
-    (void)msgQDelete(this->m_handle.m_queue);
+    this->teardown();
+}
+
+void VxWorksQueue::teardown() {
+    if (this->m_handle.m_queue != MSG_Q_ID_NULL) {
+        (void)msgQDelete(this->m_handle.m_queue);
+        this->m_handle.m_queue = MSG_Q_ID_NULL;
+    }
 }
 
 QueueInterface::Status VxWorksQueue::create(FwEnumStoreType /*id*/, const Fw::ConstStringBase& name, FwSizeType depth, FwSizeType messageSize) {
