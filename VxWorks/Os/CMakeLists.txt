@@ -33,6 +33,19 @@ register_fprime_implementation(
 )
 
 register_fprime_implementation(
+        Os_ConsoleNoWait_VxWorks
+    SOURCES
+       "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/DefaultConsoleNoWait.cpp"
+    HEADERS
+       "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.hpp"
+    DEPENDS
+        Fw_Types
+    IMPLEMENTS
+        Os_Console
+)
+
+register_fprime_implementation(
         Os_Mutex_VxWorks
     SOURCES
        "${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp"
