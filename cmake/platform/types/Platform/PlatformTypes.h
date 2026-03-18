@@ -24,7 +24,7 @@ enum VxWorksConstants {
 	VXWORKS_READ = READ,
 	VXWORKS_OK = OK,
 	VXWORKS_NO_WAIT = NO_WAIT,
-        VXWORKS_NONE = NONE
+	VXWORKS_NONE = NONE
 };
 
 #undef OK
@@ -39,7 +39,7 @@ enum {
 	READ = VXWORKS_READ,
 	OK = VXWORKS_OK,
 	NO_WAIT = VXWORKS_NO_WAIT,
-        NONE = VXWORKS_NONE
+	NONE = VXWORKS_NONE
 };
 
 #include <inttypes.h>
