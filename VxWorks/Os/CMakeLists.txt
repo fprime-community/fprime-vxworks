@@ -38,9 +38,9 @@ register_fprime_implementation(
     SOURCES
        "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
        "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.cpp"
-       "${CMAKE_CURRENT_LIST_DIR}/DefaultConsoleNoWait.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp"
     HEADERS
-       "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.hpp"
+       "${CMAKE_CURRENT_LIST_DIR}/Console.hpp"
     DEPENDS
         Fw_Types
     IMPLEMENTS
