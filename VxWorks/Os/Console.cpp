@@ -23,10 +23,9 @@ void VxWorksConsole::writeMessage(const CHAR* message, const FwSizeType size) {
         FwSizeType minSize = FW_MIN(size, MAX_CONSOLE_MESSAGE_BYTE_SIZE - 1);
         (void)memcpy(this->m_handle.circularBuffer[currentIndex], message, minSize);
         this->m_handle.circularBuffer[currentIndex][minSize] = '\0';
-        (void)logMsg(this->m_handle.circularBuffer[currentIndex], 0, 0, 0, 0, 0, 0);
+        this->logMsgImpl(currentIndex);
     }
 }
-
 ConsoleHandle* VxWorksConsole::getHandle() {
     return &this->m_handle;
 }

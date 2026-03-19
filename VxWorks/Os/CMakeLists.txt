@@ -19,8 +19,80 @@ register_fprime_module(
     Fw_Types
 )
 
-# Set up VxWorks implementation
-register_os_implementation("Console" VxWorks)
-register_os_implementation("Mutex;ConditionVariable" VxWorks Os_VxWorks_Shared)
-register_os_implementation("Queue" VxWorks)
-register_os_implementation("Task" VxWorks Os_VxWorks_Shared Fw_Time)
+register_fprime_module(
+  Os_Console_Shared
+  SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
+  HEADERS
+    "${CMAKE_CURRENT_LIST_DIR}/Console.hpp"
+  DEPENDS
+    Fw_Types
+)
+
+register_fprime_implementation(
+  Os_Console_VxWorks
+  SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/ConsoleWait.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp"
+  DEPENDS
+    Fw_Types
+    Os_Console_Shared
+  IMPLEMENTS
+    Os_Console
+)
+
+register_fprime_implementation(
+  Os_ConsoleNoWait_VxWorks
+  SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DefaultConsole.cpp"
+  DEPENDS
+    Fw_Types
+    Os_Console_Shared
+  IMPLEMENTS
+    Os_Console
+)
+
+register_fprime_implementation(
+        Os_Mutex_VxWorks
+    SOURCES
+       "${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/ConditionVariable.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/DefaultMutex.cpp"
+    HEADERS
+      "${CMAKE_CURRENT_LIST_DIR}/Mutex.hpp"
+      "${CMAKE_CURRENT_LIST_DIR}/ConditionVariable.hpp"
+    DEPENDS
+        Fw_Types
+        Os_VxWorks_Shared
+    IMPLEMENTS
+        Os_Mutex
+)
+
+register_fprime_implementation(
+        Os_Queue_VxWorks
+    SOURCES
+       "${CMAKE_CURRENT_LIST_DIR}/Queue.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/DefaultQueue.cpp"
+    HEADERS
+       "${CMAKE_CURRENT_LIST_DIR}/Queue.hpp"
+    DEPENDS
+        Fw_Types
+    IMPLEMENTS
+        Os_Queue
+)
+
+register_fprime_implementation(
+        Os_Task_VxWorks
+    SOURCES
+       "${CMAKE_CURRENT_LIST_DIR}/Task.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/DefaultTask.cpp"
+    HEADERS
+       "${CMAKE_CURRENT_LIST_DIR}/Task.hpp"
+    DEPENDS
+        Fw_Time
+        Fw_Types
+        Os_VxWorks_Shared
+    IMPLEMENTS
+        Os_Task
+)
