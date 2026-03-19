@@ -47,6 +47,7 @@ register_fprime_implementation(
     "${CMAKE_CURRENT_LIST_DIR}/ConsoleNoWait.cpp"
   DEPENDS
     Fw_Types
+    Os_Console_Shared
   IMPLEMENTS
     Os_Console
 )
