@@ -79,7 +79,6 @@ class VxWorksConsole : public ConsoleInterface {
     ConsoleHandle* getHandle() override;
 
   private:
-
     // ------------------------------------
     // Helper functions
     // ------------------------------------
@@ -87,7 +86,7 @@ class VxWorksConsole : public ConsoleInterface {
     //! \brief call logMsg or logMsgNoWait based on the chosen implementation
     //!
     //! \param currentIndex: Index into the circular buffer
-    void myLogMsg(const FwSizeType currentIndex);
+    void logMsgImpl(const FwSizeType currentIndex);
 
     //! File handle for VxWorksFile
     VxWorksConsoleHandle m_handle;
