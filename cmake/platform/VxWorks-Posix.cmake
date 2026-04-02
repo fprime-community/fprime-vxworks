@@ -20,6 +20,7 @@ register_fprime_config(
         Os_RawTime_Posix
         Os_Task_Posix
         Fw_StringFormat_snprintf
+        Fw_StringScan_sscanf
         # No VxWorks Implementation
         Os_Cpu_Stub
         Os_Memory_Stub

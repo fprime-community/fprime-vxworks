@@ -17,6 +17,7 @@ register_fprime_config(
         Os_Queue_VxWorks
         Os_Task_VxWorks
         Fw_StringFormat_snprintf
+        Fw_StringScan_sscanf
         # No VxWorks Implementation
         Os_Cpu_Stub
         Os_File_Stub
