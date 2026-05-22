@@ -8,6 +8,29 @@
 restrict_platforms(vxworks)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
+#### PriorityMemQueue VxWorks msgQ Implementation ####
+register_fprime_module(
+    Os_VxWorks_PriorityMemQueue_Implementation
+  SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/PriorityMemQueue.cpp"
+  HEADERS
+    "${CMAKE_CURRENT_LIST_DIR}/PriorityMemQueue.hpp"
+  DEPENDS
+    Fw_Types
+)
+
+register_fprime_implementation(
+    Os_VxWorks_PriorityMemQueue
+  SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/DefaultPriorityMemQueue.cpp"
+  IMPLEMENTS
+    Os_Queue
+  DEPENDS
+    Fw_Types
+    Os_VxWorks_PriorityMemQueue_Implementation
+)
+
+
 register_fprime_module(
     Os_VxWorks_Shared
   SOURCES
