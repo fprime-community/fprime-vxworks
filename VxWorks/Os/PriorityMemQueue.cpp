@@ -14,7 +14,6 @@
 #include <cstring>
 #include <limits>
 #include "Fw/LanguageHelpers.hpp"
-#include "Fw/Logger/Logger.hpp"
 #include "Fw/Types/Assert.hpp"
 #include "Fw/Types/MemAllocator.hpp"
 #include "config/MemoryAllocatorTypeEnumAc.hpp"
@@ -459,7 +458,6 @@ QueueInterface::Status PriorityMemQueue::createPriorityQueue(FwQueuePriorityType
     MSG_Q_ID msgQ = msgQCreate(static_cast<int>(numMsgs), static_cast<int>(maxMsgSize), MSG_Q_FIFO);
     
     if (msgQ == nullptr) {
-        Fw::Logger::log("ERROR: msgQCreate failed for priority %d\n", priority);
         this->teardownInternal();
         return Os::QueueInterface::Status::ALLOCATION_FAILED;
     }
@@ -486,9 +484,7 @@ void PriorityMemQueue::teardownInternal() {
             MSG_Q_ID msgQ = this->m_handle.m_msgQueues[i];
             if (msgQ != nullptr) {
                 STATUS status = msgQDelete(msgQ);
-                if (status != OK) {
-                    Fw::Logger::log("ERROR: msgQDelete failed for priority %lu\n", static_cast<unsigned long>(i));
-                }
+                FW_ASSERT(status == OK, this->m_handle.m_id, i);
                 this->m_handle.m_msgQueues[i] = nullptr;
                 this->m_handle.m_msgSizes[i] = 0;
                 this->m_handle.m_depths[i] = 0;
@@ -499,9 +495,7 @@ void PriorityMemQueue::teardownInternal() {
     // Delete the not-empty semaphore
     if (this->m_handle.m_notEmptySem != nullptr) {
         STATUS status = semDelete(this->m_handle.m_notEmptySem);
-        if (status != OK) {
-            Fw::Logger::log("ERROR: semDelete failed for not-empty semaphore\n");
-        }
+        FW_ASSERT(status == OK, this->m_handle.m_id);
         this->m_handle.m_notEmptySem = nullptr;
     }
 
@@ -552,8 +546,6 @@ QueueInterface::Status PriorityMemQueue::send(const U8* buffer,
         if (s_requirePrioritySizing) {
             FW_ASSERT(0, this->m_handle.m_id, s_requirePrioritySizing, priority);
         }
-        Fw::Logger::log("ERROR: Priority %d not found for %u, using default priority (%lu)\n", priority,
-                        this->m_handle.m_id, Os::VxWorks::Queue::DEFAULT_PRIORITY);
         priority = Os::VxWorks::Queue::DEFAULT_PRIORITY;
         msgQ = this->m_handle.m_msgQueues[priority];
     }
