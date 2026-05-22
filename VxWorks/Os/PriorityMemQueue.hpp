@@ -8,12 +8,12 @@
 // ALL RIGHTS RESERVED.  United States Government Sponsorship
 // acknowledged.
 // ======================================================================
+#include <msgQLib.h>
+#include <semLib.h>
+#include <vxWorks.h>
 #include <atomic>
 #include "Fw/Types/MemAllocator.hpp"
 #include "Os/Queue.hpp"
-#include <vxWorks.h>
-#include <msgQLib.h>
-#include <semLib.h>
 #ifndef OS_VXWORKS_PRIORITYMEMQUEUE_HPP
 #define OS_VXWORKS_PRIORITYMEMQUEUE_HPP
 
@@ -22,7 +22,8 @@ namespace VxWorks {
 
 // Constants
 namespace Queue {
-// JPL heritage implementation supported up to 32 priorities per message queue, limiting to 16 to reduce memory footprint
+// JPL heritage implementation supported up to 32 priorities per message queue, limiting to 16 to reduce memory
+// footprint
 constexpr static FwSizeType MAX_PRIORITIES = 16;
 constexpr static FwSizeType DEFAULT_PRIORITY = 0;
 }  // namespace Queue
@@ -37,20 +38,22 @@ class PriorityMemQueue;
 //! bitmasks and a counting semaphore for receive notification.
 struct PriorityMemQueueHandle : public QueueHandle {
     // Per-priority VxWorks message queues (dynamically allocated)
-    MSG_Q_ID* m_msgQueues;          // Pointer to array of VxWorks message queues
-    FwSizeType* m_msgSizes;         // Pointer to array of max message sizes per priority
-    FwSizeType* m_depths;           // Pointer to array of queue depths per priority
-    FwSizeType m_maxPriorities;     // Size of allocated arrays
-    SEM_ID m_notEmptySem;                  // VxWorks counting semaphore signaling messages available
-    FwEnumStoreType m_id;                  // Queue identifier
-    FwEnumStoreType m_allocatorId;         // Allocator ID for memory operations
-    std::atomic<U32> m_priorityMask;       // Bit mask of enabled priorities
-    std::atomic<U32>* m_highWaterMarks;    // Pointer to array of per-priority high water marks
-    U32 m_numPriorities;                   // Number of priorities
+    MSG_Q_ID* m_msgQueues;               // Pointer to array of VxWorks message queues
+    FwSizeType* m_msgSizes;              // Pointer to array of max message sizes per priority
+    FwQueuePriorityType m_maxPriority;   // Highest priority value (array size = maxPriority + 1)
+    SEM_ID m_notEmptySem;                // VxWorks counting semaphore signaling messages available
+    FwEnumStoreType m_id;                // Queue identifier
+    FwEnumStoreType m_allocatorId;       // Allocator ID for memory operations
+    std::atomic<U32> m_priorityMask;     // Bit mask of enabled priorities
+    std::atomic<U32>* m_highWaterMarks;  // Pointer to array of per-priority high water marks
 
     //! \brief Constructor to initialize semaphore
-    PriorityMemQueueHandle() : m_msgQueues(nullptr), m_msgSizes(nullptr), m_depths(nullptr), 
-                               m_maxPriorities(0), m_notEmptySem(nullptr), m_highWaterMarks(nullptr) {}
+    PriorityMemQueueHandle()
+        : m_msgQueues(nullptr),
+          m_msgSizes(nullptr),
+          m_maxPriority(0),
+          m_notEmptySem(nullptr),
+          m_highWaterMarks(nullptr) {}
 
     //! \brief Initialize the handle
     void init();
@@ -58,8 +61,9 @@ struct PriorityMemQueueHandle : public QueueHandle {
     //! \brief Allocate arrays for priority data
     //! \param allocator: memory allocator to use
     //! \param allocatorId: ID for memory allocation
+    //! \param maxPriority: highest priority value to support (array size will be maxPriority + 1)
     //! \return true if successful, false otherwise
-    bool allocateArrays(Fw::MemAllocator& allocator, FwEnumStoreType allocatorId);
+    bool allocateArrays(Fw::MemAllocator& allocator, FwEnumStoreType allocatorId, FwQueuePriorityType maxPriority);
 
     //! \brief Deallocate arrays for priority data
     //! \param allocator: memory allocator to use
@@ -107,7 +111,10 @@ class PriorityMemQueue : public Os::QueueInterface {
     //! \param numQueueConfigs: number of queue configurations
     //! \param required: If true, fatal if a non-default priority is enqueued
     //! \param allocatorId: ID to use for memory allocation
-    static void configure(QueueConfig* queueConfigs, FwSizeType numQueueConfigs, bool required, FwEnumStoreType allocatorId);
+    static void configure(QueueConfig* queueConfigs,
+                          FwSizeType numQueueConfigs,
+                          bool required,
+                          FwEnumStoreType allocatorId);
 
     //! \brief Reset static configuration (test environments only)
     //!
@@ -226,7 +233,7 @@ class PriorityMemQueue : public Os::QueueInterface {
     static bool s_requirePrioritySizing;
     static std::atomic<bool>* s_configsUsed;
     static bool s_configured;
-    
+
   private:
     //! \brief Mark that a priority has messages available
     //! \param priority: priority to mark

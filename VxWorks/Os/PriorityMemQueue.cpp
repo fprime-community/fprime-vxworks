@@ -44,19 +44,19 @@ static constexpr U32 priorityBitMask(FwQueuePriorityType priority) {
 }
 
 void PriorityMemQueueHandle::init() {
-    // Arrays must be allocated via allocateArrays() before init() is called
+    // If arrays were allocated, initialize them to safe default values 
     // Initialize all msgQ IDs to null if arrays are allocated
-    if (this->m_msgQueues != nullptr && this->m_msgSizes != nullptr && this->m_depths != nullptr) {
-        for (FwSizeType i = 0; i < this->m_maxPriorities; ++i) {
+    FwSizeType arraySize = static_cast<FwSizeType>(this->m_maxPriority) + 1;
+    if (this->m_msgQueues != nullptr && this->m_msgSizes != nullptr) {
+        for (FwSizeType i = 0; i < arraySize; ++i) {
             this->m_msgQueues[i] = nullptr;
             this->m_msgSizes[i] = 0;
-            this->m_depths[i] = 0;
         }
     }
 
     // Initialize high water marks to zero if array is allocated
     if (this->m_highWaterMarks != nullptr) {
-        for (FwSizeType i = 0; i < this->m_maxPriorities; ++i) {
+        for (FwSizeType i = 0; i < arraySize; ++i) {
             this->m_highWaterMarks[i].store(0, std::memory_order_relaxed);
         }
     }
@@ -73,27 +73,28 @@ void PriorityMemQueueHandle::init() {
 
     // Initialize atomic variables
     this->m_priorityMask.store(1U << Os::VxWorks::Queue::DEFAULT_PRIORITY, std::memory_order_relaxed);
-    this->m_numPriorities = 0;
 }
 
-bool PriorityMemQueueHandle::allocateArrays(Fw::MemAllocator& allocator, FwEnumStoreType allocatorId) {
-    // Store allocator ID for later deallocation
+bool PriorityMemQueueHandle::allocateArrays(Fw::MemAllocator& allocator, FwEnumStoreType allocatorId, FwQueuePriorityType maxPriority) {
+    // Store allocator ID and max priority for later use
     this->m_allocatorId = allocatorId;
+    this->m_maxPriority = maxPriority;
     
-    // Set max priorities to support
-    this->m_maxPriorities = Os::VxWorks::Queue::MAX_PRIORITIES;
+    // Calculate array size based on highest priority (0-indexed, so add 1)
+    FwSizeType arraySize = static_cast<FwSizeType>(maxPriority) + 1;
+    FW_ASSERT(arraySize <= Os::VxWorks::Queue::MAX_PRIORITIES, arraySize, Os::VxWorks::Queue::MAX_PRIORITIES);
     
     // Allocate memory for msgQueues array
-    FwSizeType msgQueuesSize = sizeof(MSG_Q_ID) * this->m_maxPriorities;
+    FwSizeType msgQueuesSize = sizeof(MSG_Q_ID) * arraySize;
     void* msgQueuesMem = allocator.checkedAllocate(allocatorId, msgQueuesSize, alignof(MSG_Q_ID));
     if (msgQueuesMem == nullptr) {
         return false;
     }
     // Use placement new to construct array
-    this->m_msgQueues = new (msgQueuesMem) MSG_Q_ID[this->m_maxPriorities];
+    this->m_msgQueues = new (msgQueuesMem) MSG_Q_ID[arraySize];
     
     // Allocate memory for msgSizes array
-    FwSizeType msgSizesSize = sizeof(FwSizeType) * this->m_maxPriorities;
+    FwSizeType msgSizesSize = sizeof(FwSizeType) * arraySize;
     void* msgSizesMem = allocator.checkedAllocate(allocatorId, msgSizesSize, alignof(FwSizeType));
     if (msgSizesMem == nullptr) {
         allocator.deallocate(allocatorId, this->m_msgQueues);
@@ -101,36 +102,21 @@ bool PriorityMemQueueHandle::allocateArrays(Fw::MemAllocator& allocator, FwEnumS
         return false;
     }
     // Use placement new to construct array
-    this->m_msgSizes = new (msgSizesMem) FwSizeType[this->m_maxPriorities];
-    
-    // Allocate memory for depths array
-    FwSizeType depthsSize = sizeof(FwSizeType) * this->m_maxPriorities;
-    void* depthsMem = allocator.checkedAllocate(allocatorId, depthsSize, alignof(FwSizeType));
-    if (depthsMem == nullptr) {
-        allocator.deallocate(allocatorId, this->m_msgQueues);
-        allocator.deallocate(allocatorId, this->m_msgSizes);
-        this->m_msgQueues = nullptr;
-        this->m_msgSizes = nullptr;
-        return false;
-    }
-    // Use placement new to construct array
-    this->m_depths = new (depthsMem) FwSizeType[this->m_maxPriorities];
+    this->m_msgSizes = new (msgSizesMem) FwSizeType[arraySize];
     
     // Allocate memory for highWaterMarks array
-    FwSizeType hwmSize = sizeof(std::atomic<U32>) * this->m_maxPriorities;
+    FwSizeType hwmSize = sizeof(std::atomic<U32>) * arraySize;
     void* hwmMem = allocator.checkedAllocate(allocatorId, hwmSize, alignof(std::atomic<U32>));
     if (hwmMem == nullptr) {
         allocator.deallocate(allocatorId, this->m_msgQueues);
         allocator.deallocate(allocatorId, this->m_msgSizes);
-        allocator.deallocate(allocatorId, this->m_depths);
         this->m_msgQueues = nullptr;
         this->m_msgSizes = nullptr;
-        this->m_depths = nullptr;
         return false;
     }
     // Use placement new to construct array of atomics
     this->m_highWaterMarks = reinterpret_cast<std::atomic<U32>*>(hwmMem);
-    for (FwSizeType i = 0; i < this->m_maxPriorities; ++i) {
+    for (FwSizeType i = 0; i < arraySize; ++i) {
         new (&this->m_highWaterMarks[i]) std::atomic<U32>(0);
     }
     
@@ -139,17 +125,14 @@ bool PriorityMemQueueHandle::allocateArrays(Fw::MemAllocator& allocator, FwEnumS
 
 void PriorityMemQueueHandle::deallocateArrays(Fw::MemAllocator& allocator, FwEnumStoreType allocatorId) {
     // Deallocate arrays in reverse order using stored allocator ID
+    FwSizeType arraySize = static_cast<FwSizeType>(this->m_maxPriority) + 1;
     if (this->m_highWaterMarks != nullptr) {
         // Explicitly destroy atomics before deallocation
-        for (FwSizeType i = 0; i < this->m_maxPriorities; ++i) {
+        for (FwSizeType i = 0; i < arraySize; ++i) {
             this->m_highWaterMarks[i].~atomic();
         }
         allocator.deallocate(allocatorId, this->m_highWaterMarks);
         this->m_highWaterMarks = nullptr;
-    }
-    if (this->m_depths != nullptr) {
-        allocator.deallocate(allocatorId, this->m_depths);
-        this->m_depths = nullptr;
     }
     if (this->m_msgSizes != nullptr) {
         allocator.deallocate(allocatorId, this->m_msgSizes);
@@ -159,12 +142,14 @@ void PriorityMemQueueHandle::deallocateArrays(Fw::MemAllocator& allocator, FwEnu
         allocator.deallocate(allocatorId, this->m_msgQueues);
         this->m_msgQueues = nullptr;
     }
-    this->m_maxPriorities = 0;
+    this->m_maxPriority = 0;
     this->m_allocatorId = 0;
 }
 
 void PriorityMemQueueHandle::enablePriority(FwQueuePriorityType priority) {
-    FW_ASSERT(priority < Os::VxWorks::Queue::MAX_PRIORITIES, this->m_id);
+    FW_ASSERT(priority < Os::VxWorks::Queue::MAX_PRIORITIES, priority, this->m_id);
+    // Enabling a priority is only allowed if it's in use  
+    FW_ASSERT(this->m_msgQueues != nullptr && this->m_msgQueues[priority] != nullptr, this->m_id, priority);
 
     // MEMORY ORDERING: seq_cst for control path operations ensures total ordering
     // Atomic update of priority mask using fetch_or with seq_cst (control path)
@@ -266,7 +251,8 @@ void PriorityMemQueue::configure(QueueConfig* queueConfigs, FwSizeType numQueueC
             QueueConfig* currentConfig = &queueConfigs[i];
 
             // Assert if numPriorities is 0
-            FW_ASSERT(currentConfig->numPriorities > 0, static_cast<FwAssertArgType>(i), currentConfig->instanceId);
+            FW_ASSERT(currentConfig->numPriorities > 0 && currentConfig->numPriorities <= Os::VxWorks::Queue::MAX_PRIORITIES,
+                      static_cast<FwAssertArgType>(i), currentConfig->instanceId, static_cast<FwAssertArgType>(currentConfig->numPriorities));
 
             // Check for duplicate instance IDs
             for (FwSizeType j = i + 1; j < numQueueConfigs; ++j) {
@@ -277,6 +263,7 @@ void PriorityMemQueue::configure(QueueConfig* queueConfigs, FwSizeType numQueueC
 
             // Check priority configurations
             QueuePriorityConfig* priorityConfigs = currentConfig->priorityConfigs;
+            FW_ASSERT(priorityConfigs != nullptr, static_cast<FwAssertArgType>(i), currentConfig->instanceId, currentConfig->numPriorities);
             for (FwSizeType p = 0; p < currentConfig->numPriorities; ++p) {
                 QueuePriorityConfig* pConfig = &priorityConfigs[p];
 
@@ -361,16 +348,27 @@ QueueInterface::Status PriorityMemQueue::create(FwEnumStoreType id,
     // Get the memory allocator for queue operations
     Fw::MemAllocator& allocator = this->getAllocator();
     
-    // Allocate arrays for priority data
-    if (!this->m_handle.allocateArrays(allocator, id)) {
+    // Find a matching configuration if one exists
+    QueueConfig* queueConfig = findMatchingConfig(id);
+
+    // Calculate maxPriority needed
+    FwQueuePriorityType maxPriority = Os::VxWorks::Queue::DEFAULT_PRIORITY;
+    if (queueConfig != nullptr) {
+        // Find highest priority in configuration
+        for (FwSizeType i = 0; i < queueConfig->numPriorities; ++i) {
+            if (queueConfig->priorityConfigs[i].priority > maxPriority) {
+                maxPriority = queueConfig->priorityConfigs[i].priority;
+            }
+        }
+    }
+    
+    // Allocate arrays for priority data based on maxPriority
+    if (!this->m_handle.allocateArrays(allocator, id, maxPriority)) {
         return Os::QueueInterface::Status::ALLOCATION_FAILED;
     }
     
     // Initialize the handle with allocated arrays
     this->m_handle.init();
-
-    // Find a matching configuration if one exists
-    QueueConfig* queueConfig = findMatchingConfig(id);
 
     // Create the priority queues based on configuration
     if (queueConfig != nullptr) {
@@ -409,8 +407,6 @@ QueueInterface::Status PriorityMemQueue::createConfiguredQueues(QueueConfig* que
                                                                 FwEnumStoreType allocatorId) {
     FW_ASSERT(queueConfig != nullptr, this->m_handle.m_id);
     FW_ASSERT(queueConfig->priorityConfigs != nullptr, this->m_handle.m_id, queueConfig->numPriorities);
-    
-    this->m_handle.m_numPriorities = static_cast<U32>(queueConfig->numPriorities);
 
     for (FwSizeType i = 0; i < queueConfig->numPriorities; ++i) {
         const QueuePriorityConfig& priorityConfig = queueConfig->priorityConfigs[i];
@@ -436,8 +432,6 @@ QueueInterface::Status PriorityMemQueue::createDefaultQueue(FwSizeType depth,
                                                             FwSizeType messageSize,
                                                             Fw::MemAllocator& allocator,
                                                             FwEnumStoreType allocatorId) {
-    this->m_handle.m_numPriorities = 1;
-
     // Create and initialize the default priority queue
     return this->createPriorityQueue(Os::VxWorks::Queue::DEFAULT_PRIORITY, messageSize, depth, allocator, allocatorId);
 }
@@ -450,8 +444,8 @@ QueueInterface::Status PriorityMemQueue::createPriorityQueue(FwQueuePriorityType
                                                              FwEnumStoreType allocatorId) {
     FW_ASSERT(this->m_handle.m_msgQueues != nullptr, this->m_handle.m_id, priority);
     FW_ASSERT(this->m_handle.m_msgSizes != nullptr, this->m_handle.m_id, priority);
-    FW_ASSERT(this->m_handle.m_depths != nullptr, this->m_handle.m_id, priority);
     FW_ASSERT(priority < Os::VxWorks::Queue::MAX_PRIORITIES, this->m_handle.m_id, priority);
+    FW_ASSERT(priority <= this->m_handle.m_maxPriority, this->m_handle.m_id, priority, this->m_handle.m_maxPriority);
     
     // Create VxWorks message queue
     // MSG_Q_FIFO ensures FIFO ordering within this priority level
@@ -465,7 +459,6 @@ QueueInterface::Status PriorityMemQueue::createPriorityQueue(FwQueuePriorityType
     // Store the msgQ handle and configuration
     this->m_handle.m_msgQueues[priority] = msgQ;
     this->m_handle.m_msgSizes[priority] = maxMsgSize;
-    this->m_handle.m_depths[priority] = numMsgs;
 
     return Os::QueueInterface::Status::OP_OK;
 }
@@ -480,14 +473,14 @@ void PriorityMemQueue::teardownInternal() {
     
     // Delete all VxWorks message queues if arrays are allocated
     if (this->m_handle.m_msgQueues != nullptr) {
-        for (FwSizeType i = 0; i < this->m_handle.m_maxPriorities; ++i) {
+        FwSizeType arraySize = static_cast<FwSizeType>(this->m_handle.m_maxPriority) + 1;
+        for (FwSizeType i = 0; i < arraySize; ++i) {
             MSG_Q_ID msgQ = this->m_handle.m_msgQueues[i];
             if (msgQ != nullptr) {
                 STATUS status = msgQDelete(msgQ);
                 FW_ASSERT(status == OK, this->m_handle.m_id, i);
                 this->m_handle.m_msgQueues[i] = nullptr;
                 this->m_handle.m_msgSizes[i] = 0;
-                this->m_handle.m_depths[i] = 0;
             }
         }
     }
@@ -500,7 +493,6 @@ void PriorityMemQueue::teardownInternal() {
     }
 
     // Reset handle state
-    this->m_handle.m_numPriorities = 0;
     this->m_handle.m_priorityMask.store(1U << Os::VxWorks::Queue::DEFAULT_PRIORITY, std::memory_order_relaxed);
 
     // Deallocate arrays using stored allocator ID
@@ -536,9 +528,10 @@ QueueInterface::Status PriorityMemQueue::send(const U8* buffer,
     }
 
     // Check if the queue is initialized
-    if (this->m_handle.m_numPriorities == 0 || this->m_handle.m_msgQueues == nullptr) {
+    if (this->m_handle.m_msgQueues == nullptr) {
         return QueueInterface::Status::UNINITIALIZED;
     }
+    FW_ASSERT(this->m_handle.m_msgSizes != nullptr, this->m_handle.m_id, priority);
 
     // Check if the priority queue exists - no fallback, fail fast
     MSG_Q_ID msgQ = this->m_handle.m_msgQueues[priority];
@@ -549,7 +542,7 @@ QueueInterface::Status PriorityMemQueue::send(const U8* buffer,
         priority = Os::VxWorks::Queue::DEFAULT_PRIORITY;
         msgQ = this->m_handle.m_msgQueues[priority];
     }
-    FW_ASSERT(msgQ != nullptr, this->m_handle.m_id, priority, this->m_handle.m_numPriorities);
+    FW_ASSERT(msgQ != nullptr, this->m_handle.m_id, priority);
 
     // Check for sizing problem
     if (size > this->m_handle.m_msgSizes[priority]) {
@@ -605,7 +598,7 @@ QueueInterface::Status PriorityMemQueue::receive(U8* destination,
     FW_ASSERT(destination != nullptr, blockType, this->m_handle.m_id);
 
     // Check if the queue is initialized
-    if (this->m_handle.m_numPriorities == 0 || this->m_handle.m_msgQueues == nullptr) {
+    if (this->m_handle.m_msgQueues == nullptr) {
         return QueueInterface::Status::UNINITIALIZED;
     }
 
@@ -640,12 +633,10 @@ QueueInterface::Status PriorityMemQueue::receive(U8* destination,
             if ((enabledPriorities & priorityBitMask(testPriority)) == 0) {
                 continue;
             }
-            
+            // Validate message queue is not a null pointer (if the priority is enabled, the queue must exist)
             FW_ASSERT(this->m_handle.m_msgQueues != nullptr, this->m_handle.m_id, testPriority);
             MSG_Q_ID msgQ = this->m_handle.m_msgQueues[testPriority];
-            if (msgQ == nullptr) {
-                continue;
-            }
+            FW_ASSERT(msgQ != nullptr, this->m_handle.m_id, testPriority);
             
             // Try to receive with NO_WAIT (non-blocking within this attempt)
             int bytesRead = msgQReceive(msgQ, reinterpret_cast<char*>(destination), 
@@ -680,7 +671,8 @@ FwSizeType PriorityMemQueue::getMessagesAvailable() const {
     FwSizeType total = 0;
 
     if (this->m_handle.m_msgQueues != nullptr) {
-        for (FwSizeType i = 0; i < this->m_handle.m_maxPriorities; ++i) {
+        FwSizeType arraySize = static_cast<FwSizeType>(this->m_handle.m_maxPriority) + 1;
+        for (FwSizeType i = 0; i < arraySize; ++i) {
             MSG_Q_ID msgQ = this->m_handle.m_msgQueues[i];
             if (msgQ != nullptr) {
                 int numMsgs = msgQNumMsgs(msgQ);
@@ -697,7 +689,8 @@ FwSizeType PriorityMemQueue::getMessageHighWaterMark() const {
     // MEMORY ORDERING: Use acquire to ensure visibility of latest HWM updates
     U32 maxHwm = 0;
     if (this->m_handle.m_highWaterMarks != nullptr) {
-        for (FwSizeType i = 0; i < this->m_handle.m_maxPriorities; ++i) {
+        FwSizeType arraySize = static_cast<FwSizeType>(this->m_handle.m_maxPriority) + 1;
+        for (FwSizeType i = 0; i < arraySize; ++i) {
             U32 hwm = this->m_handle.m_highWaterMarks[i].load(std::memory_order_acquire);
             if (hwm > maxHwm) {
                 maxHwm = hwm;
