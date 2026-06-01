@@ -8,6 +8,7 @@ register_fprime_target("${CMAKE_CURRENT_LIST_DIR}/../target/vxvalidate.cmake")
 set(FPRIME_USE_POSIX ON)
 set(FPRIME_HAS_SOCKETS ON)
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/types/Platform")
+add_definitions(-DTGT_OS_TYPE_VXWORKS)
 
 register_fprime_config(
         PlatformVxWorksPosix
@@ -24,5 +25,5 @@ register_fprime_config(
         # No VxWorks Implementation
         Os_Cpu_Stub
         Os_Memory_Stub
+   BASE_CONFIG
 )
-target_compile_definitions(PlatformVxWorksPosix INTERFACE -DTGT_OS_TYPE_VXWORKS)
