@@ -17,9 +17,10 @@ register_fprime_config(
         Os_Console_Posix
         Os_File_Posix
         Os_Mutex_Posix
-        Os_Generic_PriorityQueue
+        Os_Queue_VxWorks
         Os_RawTime_Posix
         Os_Task_Posix
+        Os_CountingSemaphore_Posix
         Fw_StringFormat_snprintf
         Fw_StringScan_sscanf
         # No VxWorks Implementation
