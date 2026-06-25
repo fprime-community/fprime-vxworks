@@ -18,6 +18,11 @@ extern "C" {
 
 #include <vxWorks.h>
 
+// collides with a boolean type elsewhere
+#undef boolean_t
+#undef TRUE
+#undef FALSE
+
 // Capture current value of VxWorks constants
 enum VxWorksConstants {
 	VXWORKS_ERROR = ERROR,
