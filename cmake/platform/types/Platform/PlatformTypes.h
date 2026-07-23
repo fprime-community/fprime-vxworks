@@ -20,8 +20,6 @@ extern "C" {
 
 // collides with a boolean type elsewhere
 #undef boolean_t
-#undef TRUE
-#undef FALSE
 
 // Capture current value of VxWorks constants
 enum VxWorksConstants {
@@ -29,7 +27,9 @@ enum VxWorksConstants {
 	VXWORKS_READ = READ,
 	VXWORKS_OK = OK,
 	VXWORKS_NO_WAIT = NO_WAIT,
-	VXWORKS_NONE = NONE
+	VXWORKS_NONE = NONE,
+	VXWORKS_TRUE = TRUE,
+	VXWORKS_FALSE = FALSE
 };
 
 #undef OK
@@ -37,6 +37,8 @@ enum VxWorksConstants {
 #undef READ
 #undef NO_WAIT
 #undef NONE
+#undef TRUE
+#undef FALSE
 
 // Redefine constants as enumeration
 enum {
@@ -44,7 +46,9 @@ enum {
 	READ = VXWORKS_READ,
 	OK = VXWORKS_OK,
 	NO_WAIT = VXWORKS_NO_WAIT,
-	NONE = VXWORKS_NONE
+	NONE = VXWORKS_NONE,
+    TRUE =  VXWORKS_TRUE,
+    FALSE = VXWORKS_FALSE
 };
 
 #include <inttypes.h>
