@@ -47,8 +47,8 @@ enum {
 	OK = VXWORKS_OK,
 	NO_WAIT = VXWORKS_NO_WAIT,
 	NONE = VXWORKS_NONE,
-    TRUE =  VXWORKS_TRUE,
-    FALSE = VXWORKS_FALSE
+    // TRUE =  VXWORKS_TRUE, // These definitions collide with other global TRUE/FALSE definitions from users
+    // FALSE = VXWORKS_FALSE
 };
 
 #include <inttypes.h>
