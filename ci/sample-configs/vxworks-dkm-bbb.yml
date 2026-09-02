@@ -1,5 +1,5 @@
 # Required by the CI system
-deployment-name: ReferenceDeployment
+deployment-name: FprimeVxWorksReference_ReferenceDeployment
 platform-name: vxworks
 power-port: 0
 test-scripts:
