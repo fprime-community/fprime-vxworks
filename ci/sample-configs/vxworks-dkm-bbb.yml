@@ -19,7 +19,7 @@ extra-gds-arguments:
   - ipc:///tmp/fprime-server-ci-out-bbb
   - --ip-client
   - --ip-address
-  - 192.168.0.253
+  - 192.168.0.254
   - --gui-port
   - "4444"
 
