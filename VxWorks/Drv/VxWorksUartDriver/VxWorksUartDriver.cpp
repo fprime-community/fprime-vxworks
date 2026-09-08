@@ -231,7 +231,8 @@ void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
 void VxWorksUartDriver ::start(FwTaskPriorityType priority,
                                 Os::Task::ParamType stackSize,
                                 Os::Task::ParamType cpuAffinity) {
-    Os::TaskString task("SerReader");
+    Os::TaskString task;
+    task.format("VUD_%s", this->m_device);
     Os::Task::Arguments arguments(task, serialReadTaskEntry, this, priority, stackSize, cpuAffinity);
     Os::Task::Status stat = this->m_readTask.start(arguments);
     FW_ASSERT(stat == Os::Task::OP_OK, stat);
