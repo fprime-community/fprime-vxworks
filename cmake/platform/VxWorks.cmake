@@ -24,7 +24,7 @@ register_fprime_config(
         Os_Memory_Stub
         Os_RawTime_Stub
         Os_CountingSemaphore_Stub
-   BASE_CONFIG
+   GLOBAL_IMPLICIT_DEPENDENCY
 )
 
 target_compile_definitions(PlatformVxWorks INTERFACE -DTGT_OS_TYPE_VXWORKS)
