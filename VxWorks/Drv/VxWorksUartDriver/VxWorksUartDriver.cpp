@@ -1,13 +1,7 @@
 // ======================================================================
-// \title  VxWorksUartDriverImpl.cpp
+// \title  VxWorksUartDriver.cpp
 // \author tcanham
 // \brief  cpp file for VxWorksUartDriver component implementation class
-//
-// \copyright
-// Copyright 2009-2015, by the California Institute of Technology.
-// ALL RIGHTS RESERVED.  United States Government Sponsorship
-// acknowledged.
-//
 // ======================================================================
 
 #include <VxWorks/Drv/VxWorksUartDriver/VxWorksUartDriver.hpp>
@@ -23,7 +17,7 @@
 #include <cerrno>
 #include <cstring>
 
-namespace Drv {
+namespace VxWorksDrv {
 
 // ----------------------------------------------------------------------
 // Construction, initialization, and destruction
@@ -39,10 +33,10 @@ VxWorksUartDriver ::VxWorksUartDriver(const char* const compName)
       m_quitReadThread(false) {}
 
 bool VxWorksUartDriver::open(const char* const device,
-                              UartBaudRate baud,
-                              UartFlowControl fc,
-                              UartParity parity,
-                              FwSizeType allocationSize) {
+                             UartBaudRate baud,
+                             UartFlowControl fc,
+                             UartParity parity,
+                             FwSizeType allocationSize) {
     FW_ASSERT(device != nullptr);
     int fd = -1;
     int stat = -1;
@@ -146,7 +140,7 @@ void VxWorksUartDriver ::run_handler(FwIndexType portNum, U32 context) {
 
 Drv::ByteStreamStatus VxWorksUartDriver ::send_handler(const FwIndexType portNum, Fw::Buffer& serBuffer) {
     Drv::ByteStreamStatus status = Drv::ByteStreamStatus::OP_OK;
-    if (this->m_fd == -1 || serBuffer.getData() == nullptr || serBuffer.getSize() == 0) {
+    if (this->m_fd == -1 || !serBuffer.isValid()) {
         status = Drv::ByteStreamStatus::OTHER_ERROR;
     } else {
         unsigned char* data = serBuffer.getData();
@@ -172,7 +166,7 @@ void VxWorksUartDriver::recvReturnIn_handler(FwIndexType portNum, Fw::Buffer& fw
 
 void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
     FW_ASSERT(ptr != nullptr);
-    Drv::ByteStreamStatus status = ByteStreamStatus::OTHER_ERROR;
+    Drv::ByteStreamStatus status = Drv::ByteStreamStatus::OTHER_ERROR;
     VxWorksUartDriver* comp = reinterpret_cast<VxWorksUartDriver*>(ptr);
     while (!comp->m_quitReadThread) {
         Fw::Buffer buff = comp->allocate_out(0, comp->m_allocationSize);
@@ -180,7 +174,7 @@ void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
         if (buff.getData() == nullptr) {
             Fw::LogStringArg _arg = comp->m_device;
             comp->log_WARNING_HI_NoBuffers(_arg);
-            status = ByteStreamStatus::OTHER_ERROR;
+            status = Drv::ByteStreamStatus::OTHER_ERROR;
             comp->recv_out(0, buff, status);
             Os::Task::delay(Fw::TimeInterval(0, 50000));
             continue;
@@ -215,13 +209,13 @@ void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
         if (stat == -1) {
             Fw::LogStringArg _arg = comp->m_device;
             comp->log_WARNING_HI_ReadError(_arg, stat);
-            status = ByteStreamStatus::OTHER_ERROR;
+            status = Drv::ByteStreamStatus::OTHER_ERROR;
         } else if (stat > 0) {
             buff.setSize(static_cast<U32>(stat));
-            status = ByteStreamStatus::OP_OK;
+            status = Drv::ByteStreamStatus::OP_OK;
             comp->m_bytesReceived += static_cast<FwSizeType>(stat);
         } else {
-            status = ByteStreamStatus::OTHER_ERROR;
+            status = Drv::ByteStreamStatus::OTHER_ERROR;
         }
 
         comp->recv_out(0, buff, status);
@@ -229,8 +223,8 @@ void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
 }
 
 void VxWorksUartDriver ::start(FwTaskPriorityType priority,
-                                Os::Task::ParamType stackSize,
-                                Os::Task::ParamType cpuAffinity) {
+                               Os::Task::ParamType stackSize,
+                               Os::Task::ParamType cpuAffinity) {
     Os::TaskString task;
     task.format("%s", this->getObjName());
     Os::Task::Arguments arguments(task, serialReadTaskEntry, this, priority, stackSize, cpuAffinity);
@@ -246,4 +240,4 @@ Os::Task::Status VxWorksUartDriver ::join() {
     return m_readTask.join();
 }
 
-}  // end namespace Drv
+}  // end namespace VxWorksDrv

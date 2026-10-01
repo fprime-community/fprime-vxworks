@@ -1,4 +1,4 @@
-module Drv {
+module VxWorksDrv {
 
   passive component VxWorksUartDriver {
 
@@ -6,7 +6,7 @@ module Drv {
     # General ports
     # ----------------------------------------------------------------------
 
-    import ByteStreamDriver
+    import Drv.ByteStreamDriver
 
     @ Allocation port used for allocating memory in the receive task
     output port allocate: Fw.BufferGet

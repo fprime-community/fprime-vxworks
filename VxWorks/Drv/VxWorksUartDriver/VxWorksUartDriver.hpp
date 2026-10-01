@@ -1,13 +1,7 @@
 // ======================================================================
-// \title  VxWorksUartDriverImpl.hpp
+// \title  VxWorksUartDriver.hpp
 // \author tcanham
 // \brief  hpp file for VxWorksUartDriver component implementation class
-//
-// \copyright
-// Copyright 2009-2015, by the California Institute of Technology.
-// ALL RIGHTS RESERVED.  United States Government Sponsorship
-// acknowledged.
-//
 // ======================================================================
 
 #ifndef VxWorksUartDriver_HPP
@@ -19,7 +13,7 @@
 
 #include <atomic>
 
-namespace Drv {
+namespace VxWorksDrv {
 
 class VxWorksUartDriver final : public VxWorksUartDriverComponentBase {
   public:
@@ -110,6 +104,6 @@ class VxWorksUartDriver final : public VxWorksUartDriverComponentBase {
     bool m_quitReadThread;                    //!< flag to quit thread
 };
 
-}  // end namespace Drv
+}  // end namespace VxWorksDrv
 
 #endif

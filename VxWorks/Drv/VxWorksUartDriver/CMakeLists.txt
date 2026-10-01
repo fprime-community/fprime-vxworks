@@ -5,10 +5,15 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
+restrict_platforms(vxworks)
 
-set(MOD_DEPS Os)
-set(SOURCE_FILES
+register_fprime_module(
+  AUTOCODER_INPUTS
     "${CMAKE_CURRENT_LIST_DIR}/VxWorksUartDriver.fpp"
+  SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/VxWorksUartDriver.cpp"
+  HEADERS
+    "${CMAKE_CURRENT_LIST_DIR}/VxWorksUartDriver.hpp"
+  DEPENDS
+    Os
 )
-register_fprime_module()
