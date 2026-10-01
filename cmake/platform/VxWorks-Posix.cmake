@@ -26,5 +26,5 @@ register_fprime_config(
         # No VxWorks Implementation
         Os_Cpu_Stub
         Os_Memory_Stub
-   BASE_CONFIG
+   GLOBAL_IMPLICIT_DEPENDENCY
 )
