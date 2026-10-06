@@ -96,3 +96,17 @@ register_fprime_implementation(
     IMPLEMENTS
         Os_Task
 )
+
+register_fprime_implementation(
+        Os_RawTime_VxWorks
+    SOURCES
+       "${CMAKE_CURRENT_LIST_DIR}/RawTime.cpp"
+       "${CMAKE_CURRENT_LIST_DIR}/DefaultRawTime.cpp"
+    HEADERS
+       "${CMAKE_CURRENT_LIST_DIR}/RawTime.hpp"
+    DEPENDS
+        Fw_Time
+        Fw_Types
+    IMPLEMENTS
+        Os_RawTime
+)

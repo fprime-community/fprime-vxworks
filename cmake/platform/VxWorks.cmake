@@ -16,13 +16,13 @@ register_fprime_config(
         Os_Mutex_VxWorks
         Os_Queue_VxWorks
         Os_Task_VxWorks
+        Os_RawTime_VxWorks
         Fw_StringFormat_snprintf
         Fw_StringScan_sscanf
         # No VxWorks Implementation
         Os_Cpu_Stub
         Os_File_Stub
         Os_Memory_Stub
-        Os_RawTime_Stub
         Os_CountingSemaphore_Stub
    GLOBAL_IMPLICIT_DEPENDENCY
 )
