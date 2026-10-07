@@ -169,6 +169,22 @@ void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
     Drv::ByteStreamStatus status = Drv::ByteStreamStatus::OTHER_ERROR;
     VxWorksUartDriver* comp = reinterpret_cast<VxWorksUartDriver*>(ptr);
     while (!comp->m_quitReadThread) {
+        // Use select to implement timeout
+        fd_set readfds;
+        struct timeval timeout;
+
+        FD_ZERO(&readfds);
+        FD_SET(comp->m_fd, &readfds);
+
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+
+        int selectRet = ::select(comp->m_fd + 1, &readfds, NULL, NULL, &timeout);
+        // check for zero return - means timeout.
+        if (selectRet == 0) {
+            continue; // go back to select and wait for data again
+        }
+
         Fw::Buffer buff = comp->allocate_out(0, comp->m_allocationSize);
 
         if (buff.getData() == nullptr) {
@@ -183,18 +199,6 @@ void VxWorksUartDriver ::serialReadTaskEntry(void* ptr) {
         int stat = 0;
 
         FW_ASSERT_NO_OVERFLOW(buff.getSize(), size_t);
-
-        // Use select to implement timeout
-        fd_set readfds;
-        struct timeval timeout;
-
-        FD_ZERO(&readfds);
-        FD_SET(comp->m_fd, &readfds);
-
-        timeout.tv_sec = 1;
-        timeout.tv_usec = 0;
-
-        int selectRet = ::select(comp->m_fd + 1, &readfds, NULL, NULL, &timeout);
 
         if (selectRet > 0 && FD_ISSET(comp->m_fd, &readfds)) {
             stat = static_cast<int>(::read(comp->m_fd, buff.getData(), static_cast<size_t>(buff.getSize())));
