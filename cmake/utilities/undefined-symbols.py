@@ -12,7 +12,7 @@ import argparse
 # Global constants to match the old Perl code’s definitions
 ##############################################################################
 DEFINED = "defined"
-UNDEF   = "undefined"
+UNDEF = "undefined"
 
 
 def main():
@@ -27,21 +27,23 @@ def main():
         )
     )
     parser.add_argument(
-        "-n", "--nm",
+        "-n",
+        "--nm",
         default="nm",
-        help="Name/path of the nm tool to use (default: nm)."
+        help="Name/path of the nm tool to use (default: nm).",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         default=False,
-        help="Put verbose output to stderr."
+        help="Put verbose output to stderr.",
     )
     parser.add_argument(
         "references",
         nargs="*",
         default=[],
-        help="Files from which to extract symbols or reference files to filter out 'already defined' symbols."
+        help="Files from which to extract symbols or reference files to filter out 'already defined' symbols.",
     )
 
     args = parser.parse_args()
@@ -96,14 +98,18 @@ def extract_useful_symbols_from(file, choice, nm_tool, verbose):
     """
 
     if verbose:
-        print(
-            f"== About to extract useful {choice} symbols from \"{file}\"\n"
-        )
+        print(f'== About to extract useful {choice} symbols from "{file}"\n')
     symbols = []
     # Binary file -> run nm
     try:
         proc = subprocess.Popen(
-            [nm_tool, "--undefined-only" if choice == UNDEF else "--defined-only", "-C", "--format=bsd", file],
+            [
+                nm_tool,
+                "--undefined-only" if choice == UNDEF else "--defined-only",
+                "-C",
+                "--format=bsd",
+                file,
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -113,15 +119,36 @@ def extract_useful_symbols_from(file, choice, nm_tool, verbose):
         sys.exit(1)
 
     for line in proc.stdout:
-        symbol = line[11:].strip()
+        # nm --format=bsd emits: "<value> <type> <name>" for defined symbols and
+        # "<blanks> <type> <name>" for undefined ones. The value column width varies
+        # by target word size (8 hex digits for 32-bit, 16 for 64-bit), so a fixed
+        # character offset mis-parses 64-bit output. Parse by fields instead.
+        #
+        # The type is always a single character (e.g. T, t, U, w, V). For an
+        # undefined symbol the value column is blank, so after stripping the first
+        # token is the single-character type. For a defined symbol the first token
+        # is a multi-character hex value followed by the single-character type.
+        # Demangled C++ names (via -C) may contain spaces, so the name is everything
+        # after the type token and must not be split further.
+        stripped = line.strip()
+        if not stripped:
+            continue
+        first, sep, rest = stripped.partition(" ")
+        if not sep:
+            continue
+        if len(first) == 1:
+            # No value column: "<type> <name...>"
+            symbol = rest.strip()
+        else:
+            # Value column present: "<value> <type> <name...>"
+            _type, sep2, name = rest.strip().partition(" ")
+            symbol = name.strip() if sep2 else ""
         if symbol:
             symbols.append(symbol)
 
     proc.wait()
     if verbose:
-        print(
-            f" == Extracted {len(symbols)} symbols from nm output of \"{file}\"\n"
-        )
+        print(f' == Extracted {len(symbols)} symbols from nm output of "{file}"\n')
     return symbols
 
 
