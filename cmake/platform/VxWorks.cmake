@@ -18,6 +18,7 @@ register_fprime_config(
         Os_Task_VxWorks
         Fw_StringFormat_snprintf
         Fw_StringScan_sscanf
+        Fw_AssertHook_fputs
         # No VxWorks Implementation
         Os_Cpu_Stub
         Os_File_Stub
