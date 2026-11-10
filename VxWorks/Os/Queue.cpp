@@ -82,11 +82,11 @@ QueueInterface::Status VxWorksQueue::receive(U8* destination,
     }
 
     // Casting destination to match API
-    actualSize =
+    const ssize_t received =
         msgQReceive(this->m_handle.m_queue, reinterpret_cast<char*>(destination), static_cast<size_t>(capacity),
                     (QueueInterface::BlockingType::NONBLOCKING == blockType) ? NO_WAIT : WAIT_FOREVER);
 
-    if (actualSize == VXWORKS_ERROR) {
+    if (received == VXWORKS_ERROR) {
         actualSize = 0;
         switch (errno) {
             case S_msgQLib_INVALID_MSG_LENGTH:
@@ -97,6 +97,7 @@ QueueInterface::Status VxWorksQueue::receive(U8* destination,
                 return QueueInterface::Status::UNKNOWN_ERROR;
         }
     }
+    actualSize = static_cast<FwSizeType>(received);
     return QueueInterface::Status::OP_OK;
 }
 
